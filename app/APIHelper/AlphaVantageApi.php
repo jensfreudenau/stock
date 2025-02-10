@@ -4,11 +4,11 @@ namespace App\APIHelper;
 
 use App\APIHelper\shareApi;
 use App\Models\Stock;
+use Illuminate\Support\Facades\Log;
 
 class AlphaVantageApi extends ApiCall implements shareApi
 {
-
-    public function fillShare(string $symbol): array
+    public function fillCompanyInfo($symbol): array
     {
         $url = 'https://www.alphavantage.co/query?function=OVERVIEW&symbol=' . $symbol . '&apikey=' . env('ALPHA_VANTAGE_KEY');
         $data = $this->call($url);
@@ -26,21 +26,25 @@ class AlphaVantageApi extends ApiCall implements shareApi
         return $portfolio;
     }
 
-    public function fillHistory(string $symbol): array
+    public function fillHistory($symbol): array
     {
         $url = 'https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol='.$symbol.'&interval=1min&apikey='.env('ALPHA_VANTAGE_KEY');
         $data = $this->call($url);
-        $reverse = array_reverse($data['Time Series (Daily)'], true);
-        $item = [];
-        foreach ($reverse as $key => $item) {
-            $item[$key]['symbol'] = $symbol;
-            $item[$key]['stock_date'] = $key;
-            $item[$key]['open'] = $item['1. open'];
-            $item[$key]['high'] = $item['2. high'];
-            $item[$key]['low'] = $item['3. low'];
-            $item[$key]['close'] = $item['4. close'];
-            $item[$key]['volume'] = $item['5. volume'];
+        if(empty($data) || !array_key_exists('Time Series (Daily)', $data)) {
+            Log::error('nothing found in :' . $url);
+            return [];
         }
-        return $item;
+        $reverse = array_reverse($data['Time Series (Daily)'], true);
+        $shareValue = [];
+        foreach ($reverse as $key => $item) {
+            $shareValue[$key]['symbol'] = $symbol;
+            $shareValue[$key]['stock_date'] = $key;
+            $shareValue[$key]['open'] = $item['1. open'];
+            $shareValue[$key]['high'] = $item['2. high'];
+            $shareValue[$key]['low'] = $item['3. low'];
+            $shareValue[$key]['close'] = $item['4. close'];
+            $shareValue[$key]['volume'] = $item['5. volume'];
+        }
+        return $shareValue;
     }
 }

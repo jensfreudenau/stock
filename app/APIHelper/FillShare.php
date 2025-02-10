@@ -6,7 +6,7 @@ use App\APIHelper\Share;
 
 class FillShare extends Share
 {
-    private string $symbol;
+    public string $symbol;
 
     public function __construct(string $symbol, ShareApi $shareApi)
     {
@@ -15,12 +15,11 @@ class FillShare extends Share
     }
     public function fillCompanyInfo(): array
     {
-        return $this->shareApi->fillShare($this->symbol);
+        return $this->shareApi->fillCompanyInfo($this->symbol);
     }
-
 
     public function fillHistory(): array
     {
-        return $this->shareApi->fillHistory();
+        return $this->shareApi->fillHistory($this->symbol);
     }
 }

@@ -30,7 +30,7 @@
             </td>
             <td class="border p-4 font-bold text-red-600">{{$stock->buy_amount}}</td>
             <td class="border p-4 font-bold text-red-600">{{$stock->sell_amount}}</td>
-            <td class="border p-4">{{$stock->buy_at}}</td>
+            <td class="border p-4">{{$stock->transaction_at}}</td>
             <td class="border p-4">{{$stock->sell_at}}</td>
         </tr>
     @endforeach

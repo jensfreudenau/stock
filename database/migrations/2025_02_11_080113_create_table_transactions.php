@@ -11,16 +11,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('in_stocks', function (Blueprint $table) {
+        Schema::create('transactions', function (Blueprint $table) {
             $table->id();
-            $table->string('symbol')->index();
             $table->integer('portfolio_id');
-            $table->string('name')->nullable();
-            $table->float('amount')->nullable();
-            $table->float('price')->nullable();
-            $table->date('buy_at')->nullable();
-            $table->date('sell_at')->nullable();
-
+            $table->string('symbol');
+            $table->string('type');
+            $table->float('quantity')->nullable();
+            $table->float('buy_quantity')->nullable();
+            $table->integer('price')->nullable();
+            $table->date('transaction_at')->nullable();
             $table->timestamps();
         });
     }
@@ -30,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('in_stocks');
+        Schema::dropIfExists('transactions');
     }
 };

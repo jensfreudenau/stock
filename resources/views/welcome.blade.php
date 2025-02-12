@@ -2,13 +2,6 @@
     <x-header>
         <x-slot:title>{{__('In Stock')}}</x-slot:title>
     </x-header>
-    <div x-data="{ userId: 123, fetchData() {
-    fetch(`https://api.example.com/user/${this.userId}`)
-        .then(response => response.json())
-        .then(data => console.log(data));
-}}">
-        <button @click="fetchData()">Daten abrufen</button>
-    </div>
     <div x-data="{ portfolios: [] }" x-init="portfolios = await (await fetch('/portfolio/active_portfolios')).json()">
         <div class="overflow-x-hidden">
             <div class="flex flex-wrap min-w-0 p-4 gap-4">
@@ -21,9 +14,29 @@
                         </x-line-chart>
                         <div x-data="{ performance: [] }" x-init="performance = await (await fetch(`/statistic/sharePerformance/${portfolio.symbol}`)).json()">
                             <div class="flex space-x-4">
-                                <p>Tag<span x-text="performance.day"></span></p>
-                                <p>Woche<span x-text="performance.week"></span></p>
-                                <p>Monat<span x-text="performance.month"></span></p>
+                                <table>
+                                    <tr class="bg-gray-50 border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600">
+                                        <td class="py-4 px-6">Tag</td>
+                                        <td class="py-4 px-6" x-money.de-DE.EUR="performance.day"></td>
+                                        <td class="py-4 px-6" x-money.de-DE.EUR="performance.day_profit"></td>
+                                    </tr>
+                                    <tr class="bg-gray-50 border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600">
+                                        <td class="py-4 px-6">Woche</td>
+                                        <td class="py-4 px-6" x-money.de-DE.EUR="performance.week"></td>
+                                        <td class="py-4 px-6" x-money.de-DE.EUR="performance.week_profit"></td>
+                                    </tr>
+                                    <tr class="bg-gray-50 border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600">
+                                        <td class="py-4 px-6">Monat</td>
+                                        <td class="py-4 px-6" x-money.de-DE.EUR="performance.month"></td>
+                                        <td class="py-4 px-6" x-money.de-DE.EUR="performance.month_profit"></td>
+                                    </tr>
+                                    <tr class="bg-gray-50 border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600">
+                                        <td class="py-4 px-6">Overall</td>
+                                        <td class="py-4 px-6" x-money.de-DE.EUR="performance.overall"></td>
+                                        <td class="py-4 px-6" x-money.de-DE.EUR="performance.overall_profit"></td>
+                                    </tr>
+                                </table>
+
                             </div>
                         </div>
                     </div>

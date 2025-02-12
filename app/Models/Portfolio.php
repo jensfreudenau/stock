@@ -34,9 +34,9 @@ class Portfolio extends Model
         return $this->hasMany(Stock::class);
     }
 
-    public function inStocks(): HasMany
+    public function transactions(): HasMany
     {
-        return $this->hasMany(InStock::class);
+        return $this->hasMany(Transaction::class);
     }
 
     public function sells()

@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\BalanceController;
+use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\PortfolioController;
 use App\Http\Controllers\InStockController;
 use App\Http\Controllers\ProfileController;
@@ -14,20 +14,25 @@ Route::get('/', function () {
 Route::get('/stock', function () {
     return view('stock');
 });
-Route::get('/balance/index', [BalanceController::class, 'index'])->name('balance.index');
+
 Route::get('/statistic', [StatisticController::class, 'index'])->name('statistic');
 Route::get('/statistic/getShareSalesVolumeByYear/{year}', [StatisticController::class, 'getShareSalesVolumeByYear'])->name('statistic.getShareSalesVolumeByYear');
-
-
-Route::post('instock/store', [InStockController::class, 'store'])->name('instock.store');
-Route::post('instock/add', [InStockController::class, 'add'])->name('instock.add');
-Route::post('instock/reduce', [InStockController::class, 'reduce'])->name('instock.reduce');
-Route::get('instock/shares', [InStockController::class, 'shares'])->name('instock.shares');
-Route::get('/balance', [BalanceController::class, 'balance'])->name('balance');
-Route::get('/stock/{symbol}', [StockMarketController::class, 'initialStockData'])->name('initialStockData');
+Route::get('/statistic/getProfitsByYear/{year}', [StatisticController::class, 'getProfitsByYear'])->name('statistic.getProfitsByYear');
 Route::get('/statistic/charts', [StatisticController::class, 'charts'])->name('statistic.charts');
 Route::get('/statistic/chart/{symbol}', [StatisticController::class, 'chart'])->name('statistic.chart');
 Route::get('/statistic/sharePerformance/{symbol}', [StatisticController::class, 'sharePerformance'])->name('statistic.sharePerformance');
+
+
+Route::get('instock/shares', [InStockController::class, 'shares'])->name('instock.shares');
+
+Route::post('transaction/store', [TransactionController::class, 'store'])->name('transaction.store');
+Route::post('transaction/add', [TransactionController::class, 'add'])->name('transaction.add');
+Route::post('transaction/reduce', [TransactionController::class, 'reduce'])->name('transaction.reduce');
+Route::get('/transaction/index', [TransactionController::class, 'index'])->name('transaction.index');
+Route::get('/transaction', [TransactionController::class, 'transaction'])->name('transaction');
+
+Route::get('/stock/{symbol}', [StockMarketController::class, 'initialStockData'])->name('initialStockData');
+
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');

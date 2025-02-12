@@ -17,14 +17,15 @@
                 </button>
             </div>
             <!-- Modal body -->
-            <form class="p-4 md:p-5" action="{{ route('instock.reduce') }}" method="POST" >
+            <form class="p-4 md:p-5" action="{{ route('transaction.reduce') }}" method="POST" >
                 @csrf
+                <input type="hidden" name="type" value="sell">
                 <div class="grid gap-4 mb-4 grid-cols-2">
                     <div class="col-span-2">
                         <label for="symbol" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">{{__('Symbol')}}</label>
                         <select id="symbol" name="symbol" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">
                             <template x-for="share in shares" :key="share.symbol">
-                                <option x-value="share.symbol" x-text="share.name"></option>
+                                <option x-value="share.symbol" x-text="share.symbol"></option>
                             </template>
                         </select>
                     </div>
@@ -33,13 +34,13 @@
                         <input type="text" name="price" id="price" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder="152" required="">
                     </div>
                     <div class="col-span-2">
-                        <label for="amount" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">{{__('verkaufte Anzahl')}}</label>
-                        <input type="text" name="amount" id="amount" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder="152" required="">
+                        <label for="quantity" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">{{__('verkaufte Anzahl')}}</label>
+                        <input type="text" name="quantity" id="quantity" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder="152" required="">
                     </div>
 
                     <div class="col-span-2">
-                        <label for="sell_at" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">{{__('Verkaufdatum')}}</label>
-                        <input  name="sell_at" id="datepicker-autohide sell_at" datepicker datepicker-autohide datepicker-format="dd.mm.yyyy" type="text" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-orange-500 focus:border-orange-500 block w-full ps-10 p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-orange-500 dark:focus:border-orange-500" placeholder="Select date">
+                        <label for="transaction_at" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">{{__('Verkaufdatum')}}</label>
+                        <input  name="transaction_at" id="datepicker-autohide transaction_at" datepicker datepicker-autohide datepicker-format="dd.mm.yyyy" type="text" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-orange-500 focus:border-orange-500 block w-full ps-10 p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-orange-500 dark:focus:border-orange-500" placeholder="Select date">
                     </div>
                 </div>
                 <button type="submit" class="text-white inline-flex items-center bg-orange-700 hover:bg-orange-800 focus:ring-4 focus:outline-none focus:ring-orange-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-orange-600 dark:hover:bg-orange-700 dark:focus:ring-orange-800">

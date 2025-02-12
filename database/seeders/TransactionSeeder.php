@@ -3,10 +3,10 @@
 namespace Database\Seeders;
 
 
-use App\Models\InStock;
+use App\Models\Transaction;
 use Illuminate\Database\Seeder;
 
-class InStockSeeder extends Seeder
+class TransactionSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -14,7 +14,7 @@ class InStockSeeder extends Seeder
     public function run()
     {
         // Using a Factory to generate random data (using Faker library)
-        InStock::factory(10)->create();
-        InStock::factory(20)->create();
+        Transaction::factory(10)->create();
+        Transaction::factory(20)->create();
     }
 }

@@ -11,15 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('sells', function (Blueprint $table) {
+        Schema::create('profits', function (Blueprint $table) {
             $table->id();
+            $table->integer('sell_id');
             $table->string('symbol');
-            $table->integer('portfolio_id');
-            $table->integer('price_single');
-            $table->float('amount');
-            $table->integer('revenue');
-            $table->integer('sales_proceeds');
-            $table->date('sell_date');
+            $table->float('profit');
+            $table->date('transaction_date');
             $table->timestamps();
         });
     }
@@ -29,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('sells');
+        Schema::dropIfExists('profits');
     }
 };

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Portfolio;
 use App\Models\Stock;
 use GuzzleHttp\Client;
 use Illuminate\Http\JsonResponse;
@@ -32,14 +33,15 @@ class StockMarketController extends Controller
             return response()->json(['error' => 'Unable to fetch data'], 500);
         }
         $reverse = array_reverse($data['Time Series (Daily)'], true);
-
+        $portfolio = Portfolio::where('symbol', $symbol)->first();
         foreach ($reverse as $key => $item) {
             $item['symbol'] = $symbol;
+            $item['portfolio_id'] = $portfolio->id;
             $item['stock_date'] = $key;
-            $item['open'] = $item['1. open'];
-            $item['high'] = $item['2. high'];
-            $item['low'] = $item['3. low'];
-            $item['close'] = $item['4. close'];
+            $item['open'] = $item['1. open']*100;
+            $item['high'] = $item['2. high']*100;
+            $item['low'] = $item['3. low']*100;
+            $item['close'] = $item['4. close']*100;
             $item['volume'] = $item['5. volume'];
             Stock::create($item);
         }

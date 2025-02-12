@@ -12,8 +12,9 @@ class AlphaVantageApi extends ApiCall implements shareApi
     {
         $url = 'https://www.alphavantage.co/query?function=OVERVIEW&symbol=' . $symbol . '&apikey=' . env('ALPHA_VANTAGE_KEY');
         $data = $this->call($url);
+        if(array_key_exists('Information', $data)) return [];
         $portfolio = [];
-        $portfolio['symbol'] = $data['Symbol'];
+        $portfolio['symbol'] = $symbol;
         $portfolio['name'] = $data['Name'];
         $portfolio['description'] = $data['Description'];
         $portfolio['country'] = $data['Country'];

@@ -10,10 +10,10 @@
                 </a>
             </li>
             <li>
-                <a href="/balance/index"
+                <a href="/transaction/index"
                    class="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
                     <i class="pl-1 fa-solid fa-money-bill-trend-up"></i>
-                    <span class="flex-1 ml-3 whitespace-nowrap">{{__('Bilanz')}}</span>
+                    <span class="flex-1 ml-3 whitespace-nowrap">{{__('Transaktionen')}}</span>
 
                 </a>
             </li>

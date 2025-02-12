@@ -29,31 +29,14 @@ class InStockController extends Controller
     }
 
 //https://flowbite.com/blog/how-to-use-flowbite-ui-components-with-laravel-and-alpine-js/
-    public function add(Request $request): Application|JsonResponse|Redirector|RedirectResponse
-    {
-        $this->saveInStock($request, 'buy_at');
-        return redirect('/balance/index');
-    }
+
 
     public function shares(): JsonResponse
     {
         return response()->json(Portfolio::active()->select(['symbol', 'name'])->orderBy('symbol')->get());
     }
 
-    public function store(Request $request): Application|Redirector|RedirectResponse
-    {
-        $this->saveInStock($request, 'buy_at');
-        return redirect('/balance/index');
-    }
 
-    public function reduce(Request $request): Application|Redirector|RedirectResponse
-    {
-        $sellAt = $this->saveInStock($request, 'sell_at');
-        $statisticService = new StatisticService();
-        $statisticService->calculateDeal($request->symbol, $sellAt);
-        $statisticService->save();
-        return redirect('/balance/index');
-    }
 
     private function parsePrice($price): \Money\Money
     {

@@ -1,4 +1,4 @@
-<div class="overflow-x-auto relative sm:rounded-lg " x-data="{ stocks: [] }" x-init="stocks = await (await fetch('/balance')).json()">
+<div class="overflow-x-auto relative sm:rounded-lg " x-data="{ stocks: [] }" x-init="stocks = await (await fetch('/transaction')).json()">
     <div class="pb-4 bg-white dark:bg-gray-900">
         <label for="table-search" class="sr-only">Search</label>
         <div class="relative mt-8 flex flex-col md:flex-row gap-8 mb-4">
@@ -32,9 +32,6 @@
             <th scope="col" class="py-3 px-6">
                 {{__('Symbol')}}
             </th>
-           <th scope="col" class="py-3 px-6">
-                {{__('Aktie')}}
-            </th>
             <th scope="col" class="py-3 px-6">
                 {{__('Anzahl')}}
             </th>
@@ -45,25 +42,26 @@
                 {{__('Gesamtpreis')}}
             </th>
             <th scope="col" class="py-3 px-6">
-                {{__('Gekauft am')}}
+                {{__('am')}}
             </th>
 
             <th scope="col" class="py-3 px-6">
-                {{__('verkauft am')}}
+                {{__('Transaktion')}}
             </th>
 
         </tr>
         </thead>
         <tbody>
         <template x-for="stock in stocks" :key="stock.id">
-            <tr class="bg-gray-50 border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600">
+            <tr class="bg-gray-50 border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600"
+                :class="{ 'bg-red-200' : stock.type == 'sell' , 'bg-gray-200' : stock.type == 'buy'}"
+            >
                 <th scope="row" class="py-4 px-6 font-medium text-gray-900 whitespace-nowrap dark:text-white" x-text="stock.symbol"></th>
-                <td class="py-4 px-6" x-text="stock.name"></td>
-                <td class="py-4 px-6" x-text="stock.amount"></td>
+                <td class="py-4 px-6" x-text="stock.quantity"></td>
                 <td class="py-4 px-6" x-money.de-DE.EUR="stock.price"></td>
-                <td class="py-4 px-6" x-money.de-DE.EUR="stock.price * stock.amount"></td>
-                <td class="py-4 px-6" x-text="stock.buy_at"></td>
-                <td class="py-4 px-6" x-text="stock.sell_at"></td>
+                <td class="py-4 px-6" x-money.de-DE.EUR="stock.price * stock.quantity"></td>
+                <td class="py-4 px-6" x-text="stock.transaction_at"></td>
+                <td class="py-4 px-6" x-text="stock.type"></td>
 
             </tr>
         </template>

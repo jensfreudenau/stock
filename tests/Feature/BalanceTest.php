@@ -45,7 +45,7 @@ class BalanceTest extends TestCase
     public function test_balance2023()
     {
         $inStockBuysAndSells = InStock::orderBy('id')
-            ->whereYear('buy_at', '2023')
+            ->whereYear('transaction_at', '2023')
             ->orWhereYear('sell_at', '2023')->get();
         $vst = $inStockBuysAndSells->where('symbol', 'VST');
         $calculated = $vst->each(function ($item, int $key) {

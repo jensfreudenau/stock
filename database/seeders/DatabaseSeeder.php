@@ -2,10 +2,10 @@
 
 namespace Database\Seeders;
 
-use App\Models\InStock;
-use App\Models\User;
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\Transaction;
 use Illuminate\Database\Seeder;
+
+// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
 class DatabaseSeeder extends Seeder
 {
@@ -14,75 +14,110 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        InStock::factory()->create([
+        Transaction::factory()->create([
             'symbol' => 'VST',
-            'name' => 'blub',
-            'amount' => 20,
+            'portfolio_id' => 2,
+            'quantity' => 20,
+            'buy_quantity' => 20,
             'price' => 20,
-            'buy_at' => '2023-04-19',
-            'sell_at' => NULL,
-        ]);
-        InStock::factory()->create([
-            'symbol' => 'VST',
-            'name' => 'blub',
-            'amount' => 20,
-            'price' => 20,
-            'buy_at' => NULL,
-            'sell_at' => '2023-05-19',
-        ]);
-        InStock::factory()->create([
-            'symbol' => 'VST',
-            'name' => 'blub',
-            'amount' => 20,
-            'price' => 20,
-            'buy_at' => '2024-04-19',
-            'sell_at' => NULL,
-        ]);
-        InStock::factory()->create([
-            'symbol' => 'VST',
-            'name' => 'blub',
-            'amount' => 20,
-            'price' => 30,
-            'buy_at' => '2024-06-19',
-            'sell_at' => NULL,
-        ]);
-        InStock::factory()->create([
-            'symbol' => 'VST',
-            'name' => 'blub',
-            'amount' => 40,
-            'price' => 10,
-            'sell_at' => '2024-10-19',
-            'buy_at' => NULL,
-        ]);
+            'type' => 'buy',
+            'transaction_at' => '2023-04-19'
 
-        InStock::factory()->create([
-            'symbol' => 'SAP',
-            'name' => 'SAP blub',
-            'amount' => 20,
+        ]);
+        Transaction::factory()->create([
+            'symbol' => 'VST',
+            'portfolio_id' => 2,
+            'quantity' => 20,
+            'buy_quantity' => 0,
             'price' => 20,
-            'buy_at' => '2023-04-19',
-            'sell_at' => NULL,
+            'transaction_at' => '2023-05-19',
+            'type' => 'sell',
         ]);
-        InStock::factory()->create([
-            'symbol' => 'SAP',
-            'name' => 'SAP blub',
-            'amount' => 20,
+        Transaction::factory()->create([
+            'symbol' => 'VST',
+            'portfolio_id' => 2,
+            'quantity' => 20,
+            'buy_quantity' => 20,
+            'price' => 20,
+            'transaction_at' => '2024-04-19',
+            'type' => 'buy',
+        ]);
+        Transaction::factory()->create([
+            'symbol' => 'VST',
+            'portfolio_id' => 2,
+            'quantity' => 30,
+            'buy_quantity' => 30,
             'price' => 30,
-            'buy_at' => '2023-06-19',
-            'sell_at' => NULL,
+            'transaction_at' => '2024-06-19',
+            'type' => 'buy',
         ]);
-        InStock::factory()->create([
+        Transaction::factory()->create([
+            'symbol' => 'VST',
+            'portfolio_id' => 2,
+            'quantity' => 30,
+            'buy_quantity' => 0,
+            'price' => 40,
+            'transaction_at' => '2024-10-19',
+            'type' => 'sell',
+        ]);
+        Transaction::factory()->create([
+            'symbol' => 'VST',
+            'portfolio_id' => 2,
+            'quantity' => 20,
+            'buy_quantity' => 20,
+            'price' => 30,
+            'transaction_at' => '2024-10-21',
+            'type' => 'buy',
+        ]);
+        Transaction::factory()->create([
+            'symbol' => 'VST',
+            'portfolio_id' => 2,
+            'quantity' => 20,
+            'buy_quantity' => 20,
+            'price' => 30,
+            'transaction_at' => '2024-10-22',
+            'type' => 'buy',
+        ]);
+        Transaction::factory()->create([
+            'symbol' => 'VST',
+            'portfolio_id' => 2,
+            'quantity' => 50,
+            'buy_quantity' => 0,
+            'price' => 40,
+            'transaction_at' => '2024-10-23',
+            'type' => 'sell',
+        ]);
+        Transaction::factory()->create([
             'symbol' => 'SAP',
-            'name' => 'SAP blub',
-            'amount' => 40,
+            'portfolio_id' => 1,
+            'quantity' => 20,
+            'buy_quantity' => 20,
+            'price' => 20,
+            'transaction_at' => '2024-04-19',
+            'type' => 'buy',
+        ]);
+        Transaction::factory()->create([
+            'symbol' => 'SAP',
+            'portfolio_id' => 1,
+            'quantity' => 20,
+            'buy_quantity' => 20,
+            'price' => 30,
+            'transaction_at' => '2024-06-19',
+            'type' => 'buy',
+        ]);
+        Transaction::factory()->create([
+            'symbol' => 'SAP',
+            'portfolio_id' => 1,
+            'quantity' => 40,
+            'buy_quantity' => 0,
             'price' => 100,
-            'sell_at' => '2023-10-19',
-            'buy_at' => NULL,
+            'transaction_at' => '2024-10-19',
+            'type' => 'sell',
         ]);
 
-//        $this->call([
-//            InStockSeeder::class,
-//        ]);
+        $this->call([
+            TransactionSeeder::class,
+        ]);
         // User::factory(10)->create();
 //        User::factory()->create([
 //            'name' => 'Test User',

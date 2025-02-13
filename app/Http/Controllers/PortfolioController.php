@@ -22,6 +22,10 @@ class PortfolioController extends Controller
         return view('portfolio.index');
     }
 
+    public function show($symbol)
+    {
+        return view('portfolio.show', compact('symbol'));
+    }
     public function update(Request $request): Application|Redirector|RedirectResponse
     {
         $portfolio = Portfolio::where('symbol', $request->symbol)->first();
@@ -42,6 +46,11 @@ class PortfolioController extends Controller
         return redirect('/portfolio/index');
     }
 
+    public function details($symbol): JsonResponse
+    {
+        return response()->json(Portfolio::active()->where('symbol', $symbol)->orderBy('symbol')->first());
+    }
+
     public function activePortfolios(): JsonResponse
     {
         return response()->json(Portfolio::active()->orderBy('symbol')->get());
@@ -57,12 +66,13 @@ class PortfolioController extends Controller
 
     public function initial(Request $request): Application|Redirector|RedirectResponse
     {
-        $portfolio = $this->companyInfoRequest($request->symbol, $request->shareType);
-        if ($portfolio === false) {
+        $portfolioInfo = $this->companyInfoRequest($request->symbol, $request->shareType);
+        if ($portfolioInfo === false) {
             response()->json(['error' => 'Unable to fetch data'], 500);
             return redirect('/portfolio/index');
         }
-        Portfolio::create($portfolio);
+
+        $portfolio = Portfolio::create($portfolioInfo);
 
         $histories = $this->historyRequest($request->symbol, $request->shareType);
         if ($histories === false) {
@@ -70,6 +80,7 @@ class PortfolioController extends Controller
             return redirect('/portfolio/index');
         }
         foreach ($histories as $history) {
+            $history['portfolio_id'] = $portfolio->id;
             Stock::create($history);
         }
         return redirect('/portfolio/index');

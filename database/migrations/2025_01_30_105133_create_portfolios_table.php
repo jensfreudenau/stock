@@ -14,10 +14,10 @@ return new class extends Migration
         Schema::create('portfolios', function (Blueprint $table) {
             $table->id();
             $table->string('symbol')->index();
-            $table->string('isin');
+            $table->string('isin')->nullable();
             $table->string('name')->nullable();
             $table->boolean('active')->nullable();
-            $table->date('active_since');
+            $table->date('active_since')->nullable();
             $table->string('share_type')->nullable();
             $table->text('description')->nullable();
             $table->string('country')->nullable();

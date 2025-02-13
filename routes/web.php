@@ -18,17 +18,18 @@ Route::get('/stock', function () {
 Route::get('/statistic', [StatisticController::class, 'index'])->name('statistic');
 Route::get('/statistic/getShareSalesVolumeByYear/{year}', [StatisticController::class, 'getShareSalesVolumeByYear'])->name('statistic.getShareSalesVolumeByYear');
 Route::get('/statistic/getProfitsByYear/{year}', [StatisticController::class, 'getProfitsByYear'])->name('statistic.getProfitsByYear');
-Route::get('/statistic/charts', [StatisticController::class, 'charts'])->name('statistic.charts');
 Route::get('/statistic/chart/{symbol}', [StatisticController::class, 'chart'])->name('statistic.chart');
 Route::get('/statistic/sharePerformance/{symbol}', [StatisticController::class, 'sharePerformance'])->name('statistic.sharePerformance');
 
 
 Route::get('instock/shares', [InStockController::class, 'shares'])->name('instock.shares');
+Route::get('instock/details/{symbol}', [InStockController::class, 'details'])->name('instock.details');
 
 Route::post('transaction/store', [TransactionController::class, 'store'])->name('transaction.store');
 Route::post('transaction/add', [TransactionController::class, 'add'])->name('transaction.add');
 Route::post('transaction/reduce', [TransactionController::class, 'reduce'])->name('transaction.reduce');
 Route::get('/transaction/index', [TransactionController::class, 'index'])->name('transaction.index');
+Route::get('/transaction/transactionsBySymbol/{symbol}', [TransactionController::class, 'transactionsBySymbol'])->name('transaction.transactionsBySymbol');
 Route::get('/transaction', [TransactionController::class, 'transaction'])->name('transaction');
 
 Route::get('/stock/{symbol}', [StockMarketController::class, 'initialStockData'])->name('initialStockData');
@@ -42,7 +43,9 @@ Route::post('/portfolio/update', [PortfolioController::class, 'update'])->name('
 Route::post('/portfolio/deactivate', [PortfolioController::class, 'deactivate'])->name('portfolio.deactivate');
 Route::get('/portfolio/index', [PortfolioController::class, 'index'])->name('indexPortfolio');
 Route::get('/portfolio/analytics/{symbol}', [PortfolioController::class, 'analytics'])->name('analytics');
+Route::get('/portfolio/show/{symbol}', [PortfolioController::class, 'show'])->name('portfolio.show');
 Route::get('/portfolio/active_portfolios', [PortfolioController::class, 'activePortfolios'])->name('active_portfolios');
+Route::get('/portfolio/details/{symbol}', [PortfolioController::class, 'details'])->name('portfolio.details');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

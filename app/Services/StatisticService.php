@@ -98,16 +98,22 @@ class StatisticService
         $averagePurchasePrice = $totalPurchased > 0 ? $investmentSum / $totalPurchased : 0;
         // Gewinn/Verlust Berechnung
         $profitLoss = $currentValue - ($averagePurchasePrice * $remainingShares);
-
-        $currentValues =[];
+        $buyingValue = $averagePurchasePrice * $remainingShares;
+        $percent = $profitLoss * 100 / $buyingValue;
+        $currentValues = [];
         //Verbleibende Aktien
         $currentValues['remainingShares'] = $remainingShares;
         //Aktueller Wert
         $currentValues['currentValue'] = $currentValue;
         //Durchschnittlicher Kaufpreis
         $currentValues['averagePurchasePrice'] = $averagePurchasePrice;
+        $currentValues['formatAvgPurchasePrice'] = number_format($averagePurchasePrice, 2);
         //Gewinn/Verlust
         $currentValues['profitLoss'] = $profitLoss;
+        //kaufwert
+        $currentValues['percent'] = number_format($percent, 2);
+        $currentValues['currentPrice'] = $currentPrice;
+
         // Ergebnis ausgeben
 //        echo "Verbleibende Aktien: $remainingShares\n";
 //        echo "Aktueller Wert: " . number_format($currentValue, 2) . "€\n";

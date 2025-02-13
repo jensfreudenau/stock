@@ -1,22 +1,26 @@
 @props(["symbolid" => ""])
+
 <div  {{$attributes}} x-data="{ symbolid: '{{ $symbolid }}' }">
+
     <div x-id="['bar-chart']">
-        <div x-init="initBarChart($id('bar-chart'), $data)" class="my-4 w-full p-2 text-center bg-white border border-gray-200 rounded-lg shadow-sm sm:p-4 dark:bg-gray-800 dark:border-gray-700">
+        <div x-init="initBarChartq($id('bar-chart'), $data)" class="my-4 w-full p-2 text-center bg-white border border-gray-200 rounded-lg shadow-sm sm:p-4 dark:bg-gray-800 dark:border-gray-700">
             <h5 class="mb-2 text-l font-bold text-gray-900 dark:text-white title">{{ $symbol }} </h5>
             <canvas :id="$id('bar-chart')" >{{ $symbol }}</canvas>
     </div>
     </div>
 </div>
 <script>
-    function initBarChart($id, { symbolid }) {
-        fetch(`/portfolio/analytics/` + symbolid)
-            .then(res => res.json())
-            .then(data => {
-                this.isLoading = false;
-                barChart(data, $id)
-            });
+    function initBarChartq($id, { symbolid }) {
+        console.log(id);
+        console.log(symbolid);
+        // fetch(`/portfolio/analytics/` + symbolid)
+        //     .then(res => res.json())
+        //     .then(data => {
+        //         this.isLoading = false;
+        //         barChartq(data, $id)
+        //     });
     }
-    function barChart(data, $id) {
+    function barChartq(data, $id) {
         let ctc = document.getElementById($id);
         let datas = {
             labels: ['strong buy', 'buy', 'hold', 'sell', 'strong sell'],

@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\InStock;
 use App\Models\Portfolio;
+use App\Models\Stock;
 use App\Models\Transaction;
 use App\Services\StatisticService;
 use Carbon\Carbon;
@@ -38,8 +38,14 @@ class TransactionController extends Controller
 
     public function transaction(): JsonResponse
     {
-        $stocks = Transaction::orderBy('symbol', 'asc')->orderBy('transaction_at', 'desc')->get();
-        return response()->json($stocks);
+        $transactions = Transaction::orderBy('symbol', 'asc')->orderBy('transaction_at', 'desc')->get();
+        return response()->json($transactions);
+    }
+    public function transactionsBySymbol($symbol): JsonResponse
+    {
+        $transactions = Transaction::where('symbol', $symbol)->orderBy('transaction_at', 'desc')->get();
+
+        return response()->json($transactions);
     }
 
     public function add(Request $request): Application|JsonResponse|Redirector|RedirectResponse

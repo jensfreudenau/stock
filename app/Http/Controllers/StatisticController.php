@@ -19,24 +19,10 @@ class StatisticController extends Controller
         StatisticService::calculateCurrentValues(20, 'VST');
     }
 
-    public function charts()
-    {
-        $thisYearShares = Stock::query()
-            ->whereYear('stock_date', '2024')
-            ->where('symbol', 'SAP')
-            ->selectRaw('week(stock_date) as week')
-            ->selectRaw('count(*) as count')
-            ->selectRaw('sum(close)/COUNT(*) as close')
-            ->groupBy('week')
-            ->orderBy('week')
-            ->pluck('close', 'week');
-
-        return response()->json($thisYearShares);
-    }
-
     public function chart($symbol): JsonResponse
     {
         $portfolio = Portfolio::where('symbol', $symbol)->first();
+
         $chartValues = Stock::query()
             ->select(DB::raw("DATE_FORMAT(stock_date, '%d.%m.%Y') AS stock_date"), 'close')
             ->where('symbol', $symbol)
@@ -46,7 +32,7 @@ class StatisticController extends Controller
         return response()->json($chartValues);
     }
 
-    public function sharePerformance($symbol)
+    public function sharePerformance($symbol): JsonResponse
     {
         $startLastMonth = (new Carbon('first day of last month'))->format('Y-m-d');
         $endLastMonth = (new Carbon('last day of last month'))->format('Y-m-d');
@@ -77,12 +63,6 @@ class StatisticController extends Controller
         $performance['overall_profit'] = ($last->close * $currentPerformance['remainingShares'] - $currentPerformance['averagePurchasePrice'] * $currentPerformance['remainingShares']);
 
         return response()->json($performance);
-    }
-
-    private function percent($purchasePrice, $currentPrice): float|int
-    {
-        $diff = $purchasePrice - $currentPrice;
-        return $diff / $purchasePrice * 100;
     }
 
     public function getProfitsByYear($year): JsonResponse

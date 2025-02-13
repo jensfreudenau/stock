@@ -17,17 +17,18 @@
             <!-- Modal body -->
             <form class="p-4 md:p-5" action="{{ route('portfolio.initial') }}" method="POST" >
                 @csrf
+                <input type="hidden" name="active" value="1">
                 <div class="grid gap-4 mb-4 grid-cols-2">
                     <div class="col-span-2">
                         <label for="symbol" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">{{__('Symbol')}}</label>
                         <input type="text" name="symbol" id="symbol" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder="{{__('Symbol')}}" required="">
                     </div>
                     <div class="flex items-center ps-4 border border-gray-200 rounded-sm dark:border-gray-700">
-                        <input id="share" type="radio" value="share" name="shareType" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                        <input id="share" type="radio" value="share" name="share_type" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
                         <label for="share" class="w-full py-4 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">{{__('Aktie')}}</label>
                     </div>
                     <div class="flex items-center ps-4 border border-gray-200 rounded-sm dark:border-gray-700">
-                        <input id="etf" type="radio" value="etf" name="shareType" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                        <input id="etf" type="radio" value="etf" name="share_type" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
                         <label for="etf" class="w-full py-4 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">{{__('ETF')}}</label>
                     </div>
                     <div class="col-span-2">

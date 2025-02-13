@@ -17,6 +17,7 @@ class ETFApi extends ApiCall implements shareApi
         $portfolio['name'] = $nameData['pageTitle'];
         $portfolio['share_type'] = 'etf';
         $portfolio['active'] = 1;
+        $portfolio['active_since'] = $data['active_since'];;
         $portfolio['isin'] = $data['isin'];
         $portfolio['country'] = 'DE';
 

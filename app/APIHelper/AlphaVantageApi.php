@@ -19,6 +19,8 @@ class AlphaVantageApi extends ApiCall implements shareApi
         $portfolio['description'] = $data['Description'];
         $portfolio['country'] = $data['Country'];
         $portfolio['sector'] = $data['Sector'];
+        $portfolio['active'] = $data['active'];
+        $portfolio['active_since'] = $data['active_since'];
         $portfolio['analyst_rating_strong_sell'] = $data['AnalystRatingStrongSell'];
         $portfolio['analyst_rating_strong_buy'] = $data['AnalystRatingStrongBuy'];
         $portfolio['analyst_rating_sell'] = $data['AnalystRatingSell'];

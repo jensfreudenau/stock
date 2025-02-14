@@ -3,12 +3,11 @@
     <x-header>
         <x-slot:title>{{__('Portfolio')}}</x-slot:title>
     </x-header>
-    <h2 class="text-xl font-semibold text-gray-900 dark:text-white sm:text-2xl">{{__('Portfolio Übersicht')}}</h2>
+    <h2 class="text-xl font-semibold text-gray-900 dark:text-white sm:text-2xl">{{$symbol}}</h2>
     <div class="mt-1 pt-1 sm:mt-8 md:gap-6 lg:flex lg:items-start xl:gap-8">
         <div class="mx-auto w-full flex-none lg:max-w-2xl xl:max-w-4xl">
             <div x-data="{ portfolio: [] }" x-init="portfolio = await (await fetch('/portfolio/details/{{$symbol}}')).json()">
-                <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white"
-                    x-text="portfolio.symbol"></h5>
+
                 <div class="rounded-lg mb-6 border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800 md:p-6">
                     <div x-data="{ performance: [] }" x-init="performance = await (await fetch(`/statistic/sharePerformance/{{$symbol}}`)).json()">
                         <div class="flex space-x-4">

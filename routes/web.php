@@ -41,10 +41,13 @@ Route::get('/dashboard', function () {
 Route::post('/portfolio/initial', [PortfolioController::class, 'initial'])->name('portfolio.initial');
 Route::post('/portfolio/update', [PortfolioController::class, 'update'])->name('portfolio.update');
 Route::post('/portfolio/deactivate', [PortfolioController::class, 'deactivate'])->name('portfolio.deactivate');
-Route::get('/portfolio/index', [PortfolioController::class, 'index'])->name('indexPortfolio');
+Route::get('/portfolio/index/{active}', [PortfolioController::class, 'index'])->name('indexPortfolio');
+Route::get('/portfolio/archive', [PortfolioController::class, 'archive'])->name('portfolio.archive');
 Route::get('/portfolio/analytics/{symbol}', [PortfolioController::class, 'analytics'])->name('analytics');
 Route::get('/portfolio/show/{symbol}', [PortfolioController::class, 'show'])->name('portfolio.show');
+Route::get('/portfolio/portfolios/{active}', [PortfolioController::class, 'portfolios'])->name('portfolio.portfolios');
 Route::get('/portfolio/active_portfolios', [PortfolioController::class, 'activePortfolios'])->name('active_portfolios');
+Route::get('/portfolio/deactive_portfolios', [PortfolioController::class, 'deactivePortfolios'])->name('deactive_portfolios');
 Route::get('/portfolio/details/{symbol}', [PortfolioController::class, 'details'])->name('portfolio.details');
 
 Route::middleware('auth')->group(function () {

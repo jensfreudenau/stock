@@ -52,7 +52,7 @@
         </div>
     </div>
     <x-header>
-        <x-slot:title>{{__('Profit')}}</x-slot:title>
+        <x-slot:title>{{__('Gekauft / Verkauft')}}</x-slot:title>
     </x-header>
     <div class="overflow-x-hidden">
         <div class="flex flex-wrap min-w-0 p-4 gap-8">

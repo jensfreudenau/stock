@@ -123,54 +123,7 @@ class StatisticService
         return $currentValues;
     }
 
-    public static function calculateStockProfit($stockSymbol)
-    {
-        // Lade alle Käufe für die Aktie in chronologischer Reihenfolge
-        $buys = Transaction::where('type', 'buy')
-            ->where('stock_symbol', $stockSymbol)
-            ->orderBy('created_at', 'asc')
-            ->get();
 
-        // Lade alle Verkäufe in chronologischer Reihenfolge
-        $sells = Transaction::where('type', 'sell')
-            ->where('stock_symbol', $stockSymbol)
-            ->orderBy('created_at', 'asc')
-            ->get();
-
-        $profit = 0;
-        $buyQueue = [];
-
-        // FIFO: Käufe in eine Warteschlange legen
-        foreach ($buys as $buy) {
-            $buyQueue[] = [
-                'quantity' => $buy->buy_quantity,
-                'price' => $buy->price,
-            ];
-        }
-
-        // Verkäufe durchgehen und FIFO anwenden
-        foreach ($sells as $sell) {
-            $sellQuantity = $sell->quantity;
-            $sellPrice = $sell->price;
-
-            while ($sellQuantity > 0 && !empty($buyQueue)) {
-                $firstBuy = &$buyQueue[0];
-
-                if ($firstBuy['quantity'] <= $sellQuantity) {
-                    // Gesamte Kaufposition verkaufen
-                    $profit += ($sellPrice - $firstBuy['price']) * $firstBuy['quantity'];
-                    $sellQuantity -= $firstBuy['quantity'];
-                    array_shift($buyQueue);
-                } else {
-                    // Teilweise verkaufen
-                    $profit += ($sellPrice - $firstBuy['price']) * $sellQuantity;
-                    $firstBuy['quantity'] -= $sellQuantity;
-                    $sellQuantity = 0;
-                }
-            }
-        }
-        return $profit;
-    }
 
     public function getLostWin(): float|int
     {

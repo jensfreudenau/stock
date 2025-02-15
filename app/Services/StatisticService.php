@@ -113,6 +113,8 @@ class StatisticService
         //kaufwert
         $currentValues['percent'] = number_format($percent, 2);
         $currentValues['currentPrice'] = $currentPrice;
+        //symbol
+        $currentValues['symbol'] = $symbol;
 
         // Ergebnis ausgeben
 //        echo "Verbleibende Aktien: $remainingShares\n";

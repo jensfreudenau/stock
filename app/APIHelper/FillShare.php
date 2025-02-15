@@ -2,8 +2,6 @@
 
 namespace App\APIHelper;
 
-use App\APIHelper\Share;
-
 class FillShare extends Share
 {
     public string $symbol;

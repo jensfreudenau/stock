@@ -1,6 +1,5 @@
-<aside class="fixed md:static md:translate-x-0 top-0 left-0 h-full w-64 bg-white shadow-md transform transition-transform duration-300 ease-in-out z-30" :class="open ? 'translate-x-0' : '-translate-x-full'" aria-label="Sidebar">
+<aside class="fixed md:static md:translate-x-0 top-0 left-0 h-full w-64 bg-sky-100 dark:bg-gray-800 shadow-md transform transition-transform duration-300 ease-in-out z-30" :class="open ? 'translate-x-0' : '-translate-x-full'" aria-label="Sidebar">
     <div class="overflow-y-auto py-4 pl-4 pr-16 h-screen rounded dark:bg-gray-800">
-
         <ul class="space-y-2">
             <li>
                 <a href="/"

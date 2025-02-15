@@ -2,11 +2,9 @@
 
 namespace App\APIHelper;
 
-use App\APIHelper\shareApi;
-use App\Models\Stock;
 use Illuminate\Support\Facades\Log;
 
-class AlphaVantageApi extends ApiCall implements shareApi
+class AlphaVantageApi extends ApiCall implements ShareApi
 {
     public function fillCompanyInfo($symbol): array
     {

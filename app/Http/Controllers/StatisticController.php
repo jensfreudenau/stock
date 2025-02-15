@@ -16,7 +16,18 @@ class StatisticController extends Controller
 {
     public function index()
     {
-        StatisticService::calculateCurrentValues(20, 'VST');
+        $portfolios = Portfolio::active()->orderBy('symbol')->get();
+        $performance = [];
+        foreach ($portfolios as $portfolio) {
+            $last = Stock::query()->where('symbol', $portfolio->symbol)->orderBy('id', 'desc')->first();
+            $performance['current'][] = StatisticService::calculateCurrentValues($last->close, $portfolio->symbol);
+        }
+        $portfoliosArchives = Portfolio::active(0)->orderBy('symbol')->get();
+        foreach ($portfoliosArchives as $portfoliosArchive) {
+            $last = Stock::query()->where('symbol', $portfoliosArchive->symbol)->orderBy('id', 'desc')->first();
+            $performance['archive'][] = StatisticService::calculateCurrentValues($last->close, $portfoliosArchive->symbol);
+        }
+        return view('statistic.index',  $performance);
     }
 
     public function chart($symbol): JsonResponse

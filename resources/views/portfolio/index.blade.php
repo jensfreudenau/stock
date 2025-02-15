@@ -39,7 +39,7 @@
             @else
                 <div x-data="{ portfolios: [] }" x-init="portfolios = await (await fetch('/portfolio/deactive_portfolios')).json()">
             @endif
-                <template x-for="portfolio in portfolios" :key="portfolio.symbol">
+                <template x-for="portfolio in portfolios">
                     <section class="mt-0 pt-0 flex flex-col md:flex-row gap-8 bg-white py-1 antialiased dark:bg-gray-900 md:py-1">
                         <div class="rounded-lg mb-6 border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800 md:p-6">
                             <div class="space-y-2 md:flex  md:gap-2 md:space-y-0 ">

@@ -18,7 +18,7 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
 </head>
-<body class="font-sans antialiased" x-data="{ open: false }">
+<body class="font-sans antialiased bg-white" x-data="{ open: false }">
 <button
     @click="open = !open"
     class="p-4 md:hidden focus:outline-none z-40"
@@ -38,7 +38,7 @@
         ></path>
     </svg>
 </button>
-<div class="flex gap-8 bg-white dark:bg-gray-900" >
+<div class="flex gap-8  dark:bg-gray-900" >
     <x-sidebar />
     <main class="mt-4 px-4">
         <div class="block sm:absolute top-5 right-8 order-1">

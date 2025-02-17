@@ -6,10 +6,13 @@ use App\Models\Portfolio;
 use App\Models\Profit;
 use App\Models\Stock;
 use App\Models\Transaction;
+use App\Services\DateUtility;
 use App\Services\StatisticService;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 
 
 class StatisticController extends Controller
@@ -25,9 +28,12 @@ class StatisticController extends Controller
         $portfoliosArchives = Portfolio::active(0)->orderBy('symbol')->get();
         foreach ($portfoliosArchives as $portfoliosArchive) {
             $last = Stock::query()->where('symbol', $portfoliosArchive->symbol)->orderBy('id', 'desc')->first();
-            $performance['archive'][] = StatisticService::calculateCurrentValues($last->close, $portfoliosArchive->symbol);
+            $performance['archive'][] = StatisticService::calculateCurrentValues(
+                $last->close,
+                $portfoliosArchive->symbol
+            );
         }
-        return view('statistic.index',  $performance);
+        return view('statistic.index', $performance);
     }
 
     public function chart($symbol): JsonResponse
@@ -37,7 +43,7 @@ class StatisticController extends Controller
         $chartValues = Stock::query()
             ->select(DB::raw("DATE_FORMAT(stock_date, '%d.%m.%Y') AS stock_date"), 'close')
             ->where('symbol', $symbol)
-            ->where('stock_date', '>', $portfolio->active_since)
+            ->where('stock_date', '>=', $portfolio->active_since)
             ->pluck('close', 'stock_date');
 
         return response()->json($chartValues);
@@ -49,7 +55,6 @@ class StatisticController extends Controller
         $endLastMonth = (new Carbon('last day of last month'))->format('Y-m-d');
         $startOfLastWeek = Carbon::now()->subDays(7)->startOfWeek()->format('Y-m-d');
         $endOfLastWeek = Carbon::now()->subDays(7)->endOfWeek()->format('Y-m-d');
-        $dayBeforeYesterday = Carbon::now()->subDays(2)->format('Y-m-d');
         $avgLastMonth = Stock::query()->where('symbol', $symbol)->whereBetween(
             'stock_date',
             array($startLastMonth, $endLastMonth)
@@ -60,19 +65,29 @@ class StatisticController extends Controller
             array($startOfLastWeek, $endOfLastWeek)
         )->avg('close');
 
+        $performance['day'] = 0;
+        $performance['day_profit'] = 0;
+        $performance['week'] = 0;
+        $performance['week_profit'] = 0;
+        $performance['month'] = 0;
+        $performance['month_profit'] = 0;
+        $performance['overall'] = 0;
+        $performance['overall_profit'] = 0;
+        $lastWorkday = DateUtility::getLastWorkday(Carbon::today());
+        $dayBeforeYesterday = $lastWorkday->subDays(1)->format('Y-m-d');
         $avgYesterday = Stock::query()->where('symbol', $symbol)->where('stock_date', $dayBeforeYesterday)->first();
-        $last = Stock::query()->where('symbol', $symbol)->orderBy('id', 'desc')->first();
-        $currentPerformance = StatisticService::calculateCurrentValues($last->close, $symbol);
-
-        $performance['day'] = $last->close - $avgYesterday->close;
-        $performance['day_profit'] = ($last->close * $currentPerformance['remainingShares'] - $avgYesterday->close * $currentPerformance['remainingShares']);
-        $performance['week'] = $last->close - $avgLastWeek;
-        $performance['week_profit'] = ($last->close* $currentPerformance['remainingShares'] - $avgLastWeek* $currentPerformance['remainingShares']);
-        $performance['month'] = $last->close - $avgLastMonth;
-        $performance['month_profit'] = ($last->close* $currentPerformance['remainingShares'] - $avgLastMonth* $currentPerformance['remainingShares']);
-        $performance['overall'] = $last->close - $currentPerformance['averagePurchasePrice'];
-        $performance['overall_profit'] = ($last->close * $currentPerformance['remainingShares'] - $currentPerformance['averagePurchasePrice'] * $currentPerformance['remainingShares']);
-
+        if ($avgYesterday) {
+            $last = Stock::query()->where('symbol', $symbol)->orderBy('id', 'desc')->first();
+            $currentPerformance = StatisticService::calculateCurrentValues($last->close, $symbol);
+            $performance['day'] = $last->close - $avgYesterday->close;
+            $performance['day_profit'] = ($last->close * $currentPerformance['remainingShares'] - $avgYesterday->close * $currentPerformance['remainingShares']);
+            $performance['week'] = $last->close - $avgLastWeek;
+            $performance['week_profit'] = ($last->close * $currentPerformance['remainingShares'] - $avgLastWeek * $currentPerformance['remainingShares']);
+            $performance['month'] = $last->close - $avgLastMonth;
+            $performance['month_profit'] = ($last->close * $currentPerformance['remainingShares'] - $avgLastMonth * $currentPerformance['remainingShares']);
+            $performance['overall'] = $last->close - $currentPerformance['averagePurchasePrice'];
+            $performance['overall_profit'] = ($last->close * $currentPerformance['remainingShares'] - $currentPerformance['averagePurchasePrice'] * $currentPerformance['remainingShares']);
+        }
         return response()->json($performance);
     }
 

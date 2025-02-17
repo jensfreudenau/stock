@@ -54,8 +54,9 @@ class EndOfDay extends Command
             }
             if ($portfolio->share_type === 'etf') {
                 $all['symbol'] = $portfolio->symbol;
+                $all['isin'] = $portfolio->symbol;
                 $all['portfolio_id'] = $portfolio->id;
-                $all['stock_date'] = $stockDate;
+                $all['stock_date'] = $data['stock_date'];
                 $all['open'] = $data['open'] * 100;
                 $all['low'] = $data['low'] * 100;
                 $all['high'] = $data['high'] * 100;

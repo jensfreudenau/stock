@@ -39,7 +39,10 @@
     </svg>
 </button>
 <div class="flex gap-8  dark:bg-gray-900" >
-    <x-sidebar />
+    <aside class="self-start sticky top-0">
+        <x-sidebar />
+    </aside>
+
     <main class="mt-4 px-4">
         <div class="block sm:absolute top-5 right-8 order-1">
             <x-dark-mode-toggle size="4"/>

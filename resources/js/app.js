@@ -77,7 +77,6 @@ function chartLine(data, $id) {
                     ticks: {
                         callback: function(val) {
                             return new Intl.NumberFormat("de-DE", { style: "currency", currency: "EUR" }).format(val/100)
-
                         },
                     },
                 },

@@ -50,7 +50,6 @@ class StatisticService
                 $sellQuantity = 0;
             }
         }
-
         // Speichere den Gewinn in der Datenbank
         Profit::insert([
             'symbol' => $stockSymbol,
@@ -59,7 +58,6 @@ class StatisticService
             'transaction_at' => $transactionAt,
             'created_at' => now(),
         ]);
-
         return true;
     }
 

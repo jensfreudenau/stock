@@ -6,6 +6,8 @@
     <h2 class="text-xl font-semibold text-gray-900 dark:text-white sm:text-2xl">{{$symbol}}</h2>
     <div class="mt-1 pt-1 sm:mt-8 md:gap-6 lg:flex lg:items-start xl:gap-8">
         <div class="mx-auto w-full flex-none lg:max-w-2xl xl:max-w-4xl">
+            https://www.finanzfluss.de/informer/etf/{{$symbol}}/
+            https://portfolioslab.com/symbol/SAP.DE
             <div x-data="{ portfolio: [] }" x-init="portfolio = await (await fetch('/portfolio/details/{{$symbol}}')).json()">
                 <div class="rounded-lg mb-6 border border-slate-300 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800 md:p-6">
                     <script>

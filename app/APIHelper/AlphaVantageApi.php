@@ -2,15 +2,22 @@
 
 namespace App\APIHelper;
 
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Log;
 
 class AlphaVantageApi extends ApiCall implements ShareApi
 {
-    public function fillCompanyInfo($symbol): array
+    public function fillCompanyInfo($symbol): false|array
     {
-        $url = 'https://www.alphavantage.co/query?function=OVERVIEW&symbol=' . $symbol . '&apikey=' . env('ALPHA_VANTAGE_KEY');
+        $url = 'https://www.alphavantage.co/query?function=OVERVIEW&symbol=' . $symbol . '&apikey=' .
+            Config::get('app.alpha_vantage_key');
         $data = $this->call($url);
-        if(array_key_exists('Information', $data)) return [];
+        if ($data === false) {
+            return false;
+        }
+        if (array_key_exists('Information', $data)) {
+            return [];
+        }
         $portfolio = [];
         $portfolio['symbol'] = $symbol;
         $portfolio['name'] = $data['Name'];
@@ -29,9 +36,10 @@ class AlphaVantageApi extends ApiCall implements ShareApi
 
     public function fillHistory($symbol): array
     {
-        $url = 'https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol='.$symbol.'&interval=1min&apikey='.env('ALPHA_VANTAGE_KEY');
+        $url = 'https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=' . $symbol . '&interval=1min&apikey=' .
+            Config::get('app.alpha_vantage_key');
         $data = $this->call($url);
-        if(empty($data) || !array_key_exists('Time Series (Daily)', $data)) {
+        if (empty($data) || !array_key_exists('Time Series (Daily)', $data)) {
             Log::error('nothing found in :' . $url);
             return [];
         }

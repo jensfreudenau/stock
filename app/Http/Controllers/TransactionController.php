@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Portfolio;
-use App\Models\Stock;
 use App\Models\Transaction;
 use App\Services\StatisticService;
 use Carbon\Carbon;
@@ -41,6 +40,7 @@ class TransactionController extends Controller
         $transactions = Transaction::orderBy('symbol', 'asc')->orderBy('transaction_at', 'desc')->get();
         return response()->json($transactions);
     }
+
     public function transactionsBySymbol($symbol): JsonResponse
     {
         $transactions = Transaction::where('symbol', $symbol)->orderBy('transaction_at', 'desc')->get();
@@ -70,12 +70,13 @@ class TransactionController extends Controller
     private function saveInStock(Request $request)
     {
         $portfolio = Portfolio::where('symbol', $request->symbol)->first();
-        $price = $this->parsePrice($request->price);
+        $allPrice = $this->parsePrice($request->all_price);
         $buyOrSellAt = Carbon::parse($request->transaction_at)->format('Y-m-d');
+        $quantity = Str::replace(',', '.', $request->quantity);
         $request->merge(['transaction_at' => $buyOrSellAt]);
         $request->merge(['portfolio_id' => $portfolio->id]);
-        $request->merge(['price' => $price->getAmount()]);
-        $request->merge(['quantity' => Str::replace(',', '.', $request->quantity)]);
+        $request->merge(['price' => $allPrice->getAmount() / $quantity]);
+        $request->merge(['quantity' => $quantity]);
         $request->merge(['buy_quantity' => Str::replace(',', '.', $request->quantity)]);
         $transaction = Transaction::create($request->all());
         return $transaction->id;

@@ -5,35 +5,45 @@ namespace App\Http\Controllers;
 use App\Models\Portfolio;
 use App\Models\Profit;
 use App\Models\Stock;
-use App\Models\Transaction;
-use App\Services\DateUtility;
 use App\Services\StatisticService;
 use Carbon\Carbon;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Contracts\View\View;
+use Illuminate\Foundation\Application;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Str;
+use Illuminate\Support\Number;
 
 
 class StatisticController extends Controller
 {
-    public function index()
+    public function index(): Application|Factory|View
     {
         $portfolios = Portfolio::active()->orderBy('symbol')->get();
-        $performance = [];
-        foreach ($portfolios as $portfolio) {
-            $last = Stock::query()->where('symbol', $portfolio->symbol)->orderBy('id', 'desc')->first();
-            $performance['current'][] = StatisticService::calculateCurrentValues($last->close, $portfolio->symbol);
+        $activeSymbols = [];
+        $profitTemp = 0;
+        foreach ($portfolios as $key => $portfolio) {
+            $activeSymbols[$key]['symbol'] = $portfolio->symbol;
+            $activeSymbols[$key]['name'] = $portfolio->name;
+            $price = Stock::where('symbol', $portfolio->symbol)->orderBy('id', 'desc')->first();
+            $current = StatisticService::calculateCurrentValues($price->close, $portfolio->symbol);
+            $profitTemp += $current['profitLoss'];
         }
         $portfoliosArchives = Portfolio::active(0)->orderBy('symbol')->get();
-        foreach ($portfoliosArchives as $portfoliosArchive) {
-            $last = Stock::query()->where('symbol', $portfoliosArchive->symbol)->orderBy('id', 'desc')->first();
-            $performance['archive'][] = StatisticService::calculateCurrentValues(
-                $last->close,
-                $portfoliosArchive->symbol
-            );
+        $archivedSymbols = [];
+        $profit = 0;
+        foreach ($portfoliosArchives as $key => $portfoliosArchive) {
+            $profits = Profit::where('symbol', $portfoliosArchive->symbol)->get();
+            foreach ($profits as $profitAction) {
+                $profit += $profitAction->profit;
+            }
+            $archivedSymbols[$key]['symbol'] = $portfoliosArchive->symbol;
+            $archivedSymbols[$key]['name'] = $portfoliosArchive->name;
         }
-        return view('statistic.index', $performance);
+        $profit = Number::currency($profit / 100, 'EUR');
+        $profitTemp = Number::currency($profitTemp / 100, 'EUR');
+
+        return view('statistic.index', compact('archivedSymbols', 'activeSymbols', 'profit', 'profitTemp'));
     }
 
     public function chart($symbol): JsonResponse
@@ -51,20 +61,6 @@ class StatisticController extends Controller
 
     public function sharePerformance($symbol): JsonResponse
     {
-        $startLastMonth = (new Carbon('first day of last month'))->format('Y-m-d');
-        $endLastMonth = (new Carbon('last day of last month'))->format('Y-m-d');
-        $startOfLastWeek = Carbon::now()->subDays(7)->startOfWeek()->format('Y-m-d');
-        $endOfLastWeek = Carbon::now()->subDays(7)->endOfWeek()->format('Y-m-d');
-        $avgLastMonth = Stock::query()->where('symbol', $symbol)->whereBetween(
-            'stock_date',
-            array($startLastMonth, $endLastMonth)
-        )->avg('close');
-
-        $avgLastWeek = Stock::query()->where('symbol', $symbol)->whereBetween(
-            'stock_date',
-            array($startOfLastWeek, $endOfLastWeek)
-        )->avg('close');
-
         $performance['day'] = 0;
         $performance['day_profit'] = 0;
         $performance['week'] = 0;
@@ -73,26 +69,70 @@ class StatisticController extends Controller
         $performance['month_profit'] = 0;
         $performance['overall'] = 0;
         $performance['overall_profit'] = 0;
-        $lastWorkday = DateUtility::getLastWorkday(Carbon::today());
-        $dayBeforeYesterday = $lastWorkday->subDays(1)->format('Y-m-d');
-        $avgYesterday = Stock::query()->where('symbol', $symbol)->where('stock_date', $dayBeforeYesterday)->first();
+
+        $startLastMonth = (new Carbon('first day of last month'))->format('Y-m-d');
+        $endLastMonth = (new Carbon('last day of last month'))->format('Y-m-d');
+        $startOfLastWeek = Carbon::now()->subDays(7)->startOfWeek()->format('Y-m-d');
+        $endOfLastWeek = Carbon::now()->subDays(7)->endOfWeek()->previousWeekday()->format('Y-m-d');
+        $avgLastMonth = Stock::query()
+            ->where('symbol', $symbol)
+            ->whereBetween('stock_date', array($startLastMonth, $endLastMonth))
+            ->avg('close');
+
+        $avgLastWeek = Stock::query()
+            ->where('symbol', $symbol)
+            ->whereBetween('stock_date', array($startOfLastWeek, $endOfLastWeek))
+            ->avg('close');
+
+        $today = Carbon::now();
+        $dayBefore = $today->previousWeekday();
+        $avgYesterday = Stock::query()->where('symbol', $symbol)->where(
+            'stock_date',
+            $dayBefore->previousWeekday()->format('Y-m-d')
+        )->first();
+        $last = Stock::query()->where('symbol', $symbol)->orderBy('id', 'desc')->first();
+        $currentPerformance = StatisticService::calculateCurrentValues($last->close, $symbol);
         if ($avgYesterday) {
-            $last = Stock::query()->where('symbol', $symbol)->orderBy('id', 'desc')->first();
-            $currentPerformance = StatisticService::calculateCurrentValues($last->close, $symbol);
-            $performance['day'] = $last->close - $avgYesterday->close;
+            $performance['day'] = $currentPerformance['averagePurchasePrice'] - $avgYesterday->close;
             $performance['day_profit'] = ($last->close * $currentPerformance['remainingShares'] - $avgYesterday->close * $currentPerformance['remainingShares']);
-            $performance['week'] = $last->close - $avgLastWeek;
-            $performance['week_profit'] = ($last->close * $currentPerformance['remainingShares'] - $avgLastWeek * $currentPerformance['remainingShares']);
-            $performance['month'] = $last->close - $avgLastMonth;
-            $performance['month_profit'] = ($last->close * $currentPerformance['remainingShares'] - $avgLastMonth * $currentPerformance['remainingShares']);
-            $performance['overall'] = $last->close - $currentPerformance['averagePurchasePrice'];
-            $performance['overall_profit'] = ($last->close * $currentPerformance['remainingShares'] - $currentPerformance['averagePurchasePrice'] * $currentPerformance['remainingShares']);
         }
+        if ($avgLastWeek) {
+            $performance['week'] = $currentPerformance['averagePurchasePrice'] - $avgLastWeek;
+            $performance['week_profit'] = ($last->close * $currentPerformance['remainingShares'] - $avgLastWeek * $currentPerformance['remainingShares']);
+        }
+
+        if ($avgLastMonth) {
+            $performance['month'] = $currentPerformance['averagePurchasePrice'] - $avgLastMonth;
+            $performance['month_profit'] = ($last->close * $currentPerformance['remainingShares'] - $avgLastMonth * $currentPerformance['remainingShares']);
+        }
+
+        $performance['overall'] = $last->close - $currentPerformance['averagePurchasePrice'];
+        $performance['overall_profit'] = ($last->close * $currentPerformance['remainingShares'] - $currentPerformance['averagePurchasePrice'] * $currentPerformance['remainingShares']);
+
         return response()->json($performance);
     }
 
-    public function getProfitsByYear($year): JsonResponse
-    {
+    public function active(
+        $symbol
+    ): JsonResponse {
+        $price = Stock::where('symbol', $symbol)->orderBy('id', 'desc')->first();
+        $currentValues = StatisticService::calculateCurrentValues($price->close, $symbol);
+
+        return response()->json($currentValues);
+    }
+
+    public function archive(
+        $symbol
+    ): JsonResponse {
+        $price = Stock::where('symbol', $symbol)->orderBy('id', 'desc')->first();
+        $currentValues = StatisticService::calculatePastValues($price->close, $symbol);
+
+        return response()->json($currentValues);
+    }
+
+    public function getProfitsByYear(
+        $year
+    ): JsonResponse {
         $date = Carbon::createFromDate($year, 1, 1);
         $startOfYear = $date->copy()->startOfYear()->format('Y-m-d');
         $endOfYear = $date->copy()->endOfYear()->format('Y-m-d');
@@ -104,44 +144,5 @@ class StatisticController extends Controller
             ->sum('profit');
         $inStockBuysAndSells['sum_profit'] = $sum;
         return response()->json($inStockBuysAndSells);
-    }
-
-    public function getShareSalesVolumeByYear($year): JsonResponse
-    {
-        $date = Carbon::createFromDate($year, 1, 1);
-        $startOfYear = $date->copy()->startOfYear()->format('Y-m-d');
-        $endOfYear = $date->copy()->endOfYear()->format('Y-m-d');
-        $inStockBuysAndSells = Transaction::orderBy('id')
-            ->whereBetween('transaction_at', [$startOfYear, $endOfYear])
-            ->get();
-        $shares = Transaction::getAllShares();
-        $outcome = 0;
-        $income = 0;
-        foreach ($shares as $share) {
-            $symbol = $inStockBuysAndSells->where('symbol', $share->symbol);
-//            $calculated[] = $symbol->each(function ($item) {
-//                $multiplier = 1;
-//                if (!empty($item->sell_at)) {
-//                    $multiplier = -1;
-//                    return $item['outcome_price'] = ($item->price * $item->amount) * $multiplier;
-//                }
-//                return $item['income_price'] = ($item->price * $item->amount) * $multiplier;
-//            });
-        }
-        $data = [];
-//        foreach ($calculated as $key => $item) {
-//            $first = $item->first();
-//            if ($first) {
-//                $data[$key]['symbol'] = $first->symbol;
-//                $data[$key]['income_price'] = $item->sum('income_price');
-//                $data[$key]['outcome_price'] = $item->sum('outcome_price');
-//                $outcome += $data[$key]['outcome_price'];
-//                $income += $data[$key]['income_price'];
-//            }
-//        }
-//        $data['outcome'] = $outcome;
-//        $data['income'] = $income;
-
-        return response()->json($data);
     }
 }

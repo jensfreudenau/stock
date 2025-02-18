@@ -39,14 +39,11 @@ class StatisticService
                 $sellQuantity -= $buy->quantity;
                 // Setze die Kaufmenge auf 0, weil sie verkauft wurde
                 Transaction::where('id', $buy->id)->update(['quantity' => 0]);
-                Transaction::where('id', $buy->id)->update(['buy_quantity' => $buy->quantity]);
             } else {
                 // Teilweise verkaufen
                 $profit += ($sellPrice - $buy->price) * $sellQuantity;
                 // Reduziere die verbleibende Kaufmenge
                 Transaction::where('id', $buy->id)->update(['quantity' => $buy->quantity - $sellQuantity]);
-                Transaction::where('id', $buy->id)->update(['buy_quantity' => $buy->quantity]);
-
                 $sellQuantity = 0;
             }
         }
@@ -63,6 +60,9 @@ class StatisticService
 
     public static function calculateCurrentValues($currentPrice, $symbol): array
     {
+        if ($currentPrice === 0) {
+            $currentPrice = 1;
+        }
         $buys = Transaction::where('type', 'buy')
             ->where('symbol', $symbol)
             ->orderBy('transaction_at', 'asc')
@@ -124,6 +124,62 @@ class StatisticService
     }
 
 
+    public static function calculatePastValues($pastPrice, $symbol): array
+    {
+        $buys = Transaction::where('type', 'buy')
+            ->where('symbol', $symbol)
+            ->orderBy('transaction_at', 'asc')
+            ->get();
+
+        // Lade alle Verkäufe in chronologischer Reihenfolge
+        $sells = Transaction::where('type', 'sell')
+            ->where('symbol', $symbol)
+            ->orderBy('transaction_at', 'asc')
+            ->get();
+
+        // Berechnung der gekauften Aktien und Investitionssumme
+        $totalPurchased = 0;
+        $investmentSum = 0;
+
+        foreach ($buys as $buy) {
+            $totalPurchased += $buy->buy_quantity;
+            $investmentSum += $buy->buy_quantity * $buy->price;
+        }
+
+        $profit = 0;
+        $totalSells = 0;
+        $sellSum = 0;
+        foreach ($sells as $sell) {
+            $totalSells += $sell->quantity;
+            $sellSum += $sell->quantity * $sell->price;
+            $profitModel = Profit::where('sell_id', $sell->id)->first();
+            $profit += $profitModel->profit;
+        }
+
+        $averagePurchasePrice = $investmentSum / $totalPurchased;
+        $averageSellPrice = $sellSum / $totalSells;
+
+        // Gewinn/Verlust Berechnung
+
+        $buyingValue = $averagePurchasePrice * $totalPurchased;
+        $percent = $profit * 100 / $buyingValue;
+        $currentValues = [];
+        //Verbleibende Aktien
+        $currentValues['remainingShares'] = 0;
+
+        //Durchschnittlicher Kaufpreis
+        $currentValues['averagePurchasePrice'] = $averagePurchasePrice;
+
+        //Gewinn/Verlust
+        $currentValues['profitLoss'] = $profit;
+        //kaufwert
+        $currentValues['percent'] = number_format($percent, 2);
+        $currentValues['averageSellPrice'] = $averageSellPrice;
+        //symbol
+        $currentValues['symbol'] = $symbol;
+
+        return $currentValues;
+    }
 
     public function getLostWin(): float|int
     {

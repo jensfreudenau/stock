@@ -100,12 +100,12 @@
                                 </div>
                             </div>
                             <x-chart-line symbol="${portfolio.symbol}" x-model="portfolio.symbol"> </x-chart-line>
-
                         </div>
                     </section>
                 </template>
             </div>
         </div>
+    </div>
     </div>
     <x-modal-portfolio-add/>
 </x-layout>

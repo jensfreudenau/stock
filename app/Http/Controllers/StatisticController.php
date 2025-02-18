@@ -86,15 +86,19 @@ class StatisticController extends Controller
 
         $today = Carbon::now();
         $dayBefore = $today->previousWeekday();
-        $avgYesterday = Stock::query()->where('symbol', $symbol)->where(
+        $previousWeekday = Stock::query()->where('symbol', $symbol)->where(
+            'stock_date',
+            $dayBefore->format('Y-m-d')
+        )->first();
+        $dayBeforePreviousWeekday = Stock::query()->where('symbol', $symbol)->where(
             'stock_date',
             $dayBefore->previousWeekday()->format('Y-m-d')
         )->first();
         $last = Stock::query()->where('symbol', $symbol)->orderBy('id', 'desc')->first();
         $currentPerformance = StatisticService::calculateCurrentValues($last->close, $symbol);
-        if ($avgYesterday) {
-            $performance['day'] = $currentPerformance['averagePurchasePrice'] - $avgYesterday->close;
-            $performance['day_profit'] = ($last->close * $currentPerformance['remainingShares'] - $avgYesterday->close * $currentPerformance['remainingShares']);
+        if ($previousWeekday && $dayBeforePreviousWeekday) {
+            $performance['day'] = $previousWeekday->close - $dayBeforePreviousWeekday->close;
+            $performance['day_profit'] = ($previousWeekday->close - $dayBeforePreviousWeekday->close) * $currentPerformance['remainingShares'];
         }
         if ($avgLastWeek) {
             $performance['week'] = $currentPerformance['averagePurchasePrice'] - $avgLastWeek;

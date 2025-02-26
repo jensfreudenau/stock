@@ -12,6 +12,7 @@ window.ApexCharts = ApexCharts;
 Alpine.start();
 
 function initBarChart($id, $symbol) {
+
     fetch(`/portfolio/analytics/` + $symbol)
         .then(res => res.json())
         .then(data => {
@@ -20,17 +21,20 @@ function initBarChart($id, $symbol) {
 }
 
 function barChart(data, $id) {
+
+    console.log(data['company']['analyst_rating_strong_buy'] );
     let ctc = document.getElementById($id);
+
     let datas = {
         labels: ['strong buy', 'buy', 'hold', 'sell', 'strong sell'],
         datasets: [{
             backgroundColor: ["#3e95cd", "#8e5ea2", "#3cba9f", "#e8c3b9", "#c45850"],
             data: [
-                data[0]['analyst_rating_strong_buy'],
-                data[0]['analyst_rating_buy'],
-                data[0]['analyst_rating_hold'],
-                data[0]['analyst_rating_sell'],
-                data[0]['analyst_rating_strong_sell']
+                data['company']['analyst_rating_strong_buy'],
+                data['company']['analyst_rating_buy'],
+                data['company']['analyst_rating_hold'],
+                data['company']['analyst_rating_sell'],
+                data['company']['analyst_rating_strong_sell']
             ]
         }]
     };
@@ -49,6 +53,8 @@ function barChart(data, $id) {
 }
 
 function initChartLine($id, $symbol) {
+    console.log($id);
+    console.log($symbol);
     fetch(`/statistic/chart/` + $symbol)
         .then(res => res.json())
         .then(data => {

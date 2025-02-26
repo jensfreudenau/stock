@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Portfolio extends Model
 {
@@ -18,8 +19,12 @@ class Portfolio extends Model
         'name',
         'description',
         'country',
+        'ing_id',
+        'wkn',
         'share_type',
         'isin',
+        'internal_isin',
+        'currency',
         'active',
         'active_since',
         'sector',
@@ -29,6 +34,11 @@ class Portfolio extends Model
         'analyst_rating_hold'
     ];
 
+    public function company(): HasOne
+    {
+        return $this->hasOne(Company::class);
+    }
+
     public function stocks(): HasMany
     {
         return $this->hasMany(Stock::class);
@@ -37,11 +47,6 @@ class Portfolio extends Model
     public function transactions(): HasMany
     {
         return $this->hasMany(Transaction::class);
-    }
-
-    public function sells()
-    {
-        return $this->hasMany(Sell::class);
     }
 
     public function scopeActive(Builder $query, $active = 1): void

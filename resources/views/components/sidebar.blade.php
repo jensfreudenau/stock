@@ -31,6 +31,13 @@
                     <span class="flex-1 ml-3 whitespace-nowrap">{{__('Portfolio')}}</span>
                 </a>
             </li>
+            <li>
+                <a href="/adjust/index/1"
+                   class="flex items-center p-2 text-base font-normal text-gray-100 rounded-lg dark:text-white hover:bg-gray-900 dark:hover:bg-gray-700">
+                    <i class="pl-1 fa-solid fa-adjust"></i>
+                    <span class="flex-1 ml-3 whitespace-nowrap">{{__('Einstellungen')}}</span>
+                </a>
+            </li>
         </ul>
     </div>
 </aside>

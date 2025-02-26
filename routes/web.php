@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\ConfigurationController;
+use App\Http\Controllers\ScrapingController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\PortfolioController;
 use App\Http\Controllers\InStockController;
@@ -14,7 +16,7 @@ Route::get('/', function () {
 Route::get('/stock', function () {
     return view('stock');
 });
-
+Route::get('/v1/scraping/scrape-quotes', [ScrapingController::class, 'scrapeQuotes']);
 Route::get('/statistic', [StatisticController::class, 'index'])->name('statistic');
 Route::get('/statistic/getShareSalesVolumeByYear/{year}', [StatisticController::class, 'getShareSalesVolumeByYear'])->name('statistic.getShareSalesVolumeByYear');
 Route::get('/statistic/getProfitsByYear/{year}', [StatisticController::class, 'getProfitsByYear'])->name('statistic.getProfitsByYear');
@@ -50,6 +52,9 @@ Route::get('/portfolio/portfolios/{active}', [PortfolioController::class, 'portf
 Route::get('/portfolio/active_portfolios', [PortfolioController::class, 'activePortfolios'])->name('active_portfolios');
 Route::get('/portfolio/deactive_portfolios', [PortfolioController::class, 'deactivePortfolios'])->name('deactive_portfolios');
 Route::get('/portfolio/details/{symbol}', [PortfolioController::class, 'details'])->name('portfolio.details');
+
+Route::get('/configuration/index',[ConfigurationController::class, 'index'])->name('configuration.index');
+Route::post('/configuration/update',[ConfigurationController::class, 'update'])->name('configuration.update');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

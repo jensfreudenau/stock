@@ -16,11 +16,11 @@ return new class extends Migration
             $table->string('symbol')->index();
             $table->date('stock_date');
             $table->integer('portfolio_id');
-            $table->integer('open');
-            $table->integer('low');
-            $table->integer('high');
+            $table->integer('open')->nullable();
+            $table->integer('low')->nullable();
+            $table->integer('high')->nullable();
             $table->integer('close');
-            $table->float('volume');
+            $table->float('volume')->nullable();
             $table->timestamps();
         });
     }

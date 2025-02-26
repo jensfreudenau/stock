@@ -3,31 +3,29 @@
     <x-header>
         <x-slot:title>{{__('Portfolio')}}</x-slot:title>
     </x-header>
-    <h2 class="text-xl font-semibold text-gray-900 dark:text-white sm:text-2xl">{{$symbol}}</h2>
+    <h2 class="text-xl font-semibold text-gray-900 dark:text-white sm:text-2xl">{{$portfolio->name}}</h2>
+    <h3 class="text-base  text-gray-900 dark:text-white sm:text-base">{{$portfolio->symbol}}</h3>
     <div class="mt-1 pt-1 sm:mt-8 md:gap-6 lg:flex lg:items-start xl:gap-8">
         <div class="mx-auto w-full flex-none lg:max-w-2xl xl:max-w-4xl">
-            https://www.finanzfluss.de/informer/etf/{{$symbol}}/
-            https://portfolioslab.com/symbol/SAP.DE
-            <div x-data="{ portfolio: [] }" x-init="portfolio = await (await fetch('/portfolio/details/{{$symbol}}')).json()">
+            <div x-data="{ portfolio: [] }" x-init="portfolio = await (await fetch('/portfolio/details/{{$portfolio->id}}')).json()">
                 <div class="rounded-lg mb-6 border border-slate-300 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800 md:p-6">
                     <script>
-                        window.symbol = @json($symbol);
+                        window.id = @json($portfolio->id);
                     </script>
-                    <x-table-profit symbol="${portfolio.symbol}" x-model="portfolio.symbol"></x-table-profit>
+                    <x-table-profit symbol="${portfolio.id}" x-model="portfolio.id"></x-table-profit>
                 </div>
                 <section class="rounded-lg mb-6 border border-slate-300 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800 md:p-6">
                     <div class="rounded-lg mb-6 border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800 md:p-6">
                         <div class="space-y-2 md:flex md:gap-2 md:space-y-0 ">
                             <div class="w-full min-w-0 flex-1 space-y-4 md:order-2">
-                                <p class="font-normal text-gray-700 dark:text-gray-400"
-                                   x-text="portfolio.name"></p>
-                                <p class="font-normal text-gray-700 dark:text-gray-400"></p>
+                                <p class="font-normal text-gray-700 dark:text-gray-400" x-text="portfolio.company.name">Name</p>
                                 <a href="#"
                                    class="text-base font-medium text-gray-900 hover:underline dark:text-white"
                                    x-text="portfolio.description"></a>
                                 <form class="pb-3" action="{{ route('portfolio.update') }}" method="POST">
                                     @csrf
                                     <input type="hidden" name="symbol" value="" :value="portfolio.symbol">
+                                    <input type="hidden" name="portfolioId" value="" :value="portfolio.id">
                                     <button type="submit"
                                             class="block text-white bg-orange-500 hover:bg-orange-700 focus:ring-4 focus:outline-none focus:ring-orange-700 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-orange-600 dark:hover:bg-orange-700 dark:focus:ring-orange-800">
                                         {{__('update Firma')}}
@@ -37,12 +35,12 @@
                             <div class=" gap-4 pr-4">
                                 <div class=" font-bold tracking-tight text-gray-900 dark:text-white p-2">{{__('Sektor')}}
                                     <div class="font-normal text-gray-700 dark:text-gray-400"
-                                         x-text="portfolio.sector"></div>
+                                         x-text="portfolio.company.sector"></div>
                                 </div>
                                 <div
                                     class=" font-bold tracking-tight text-gray-900 dark:text-white p-2">{{__('Country')}}
                                     <div class="font-normal text-gray-700 dark:text-gray-400"
-                                         x-text="portfolio.country"></div>
+                                         x-text="portfolio.company.country"></div>
                                 </div>
 
                                 <div class="flex items-center gap-4">
@@ -58,19 +56,19 @@
                                         </button>
                                     </form>
                                 </div>
-
-                                <x-chart-bar symbol="{{$symbol}}" x-model="portfolio.symbol">
-                                    {{$symbol}}
+                                <x-chart-bar id="{{$portfolio->id}}" x-model="portfolio.id">
+                                    {{$portfolio->id}}
                                 </x-chart-bar>
+
                             </div>
                         </div>
 
-                        <x-chart-line symbol="{{$symbol}}" x-model="portfolio.symbol"></x-chart-line>
+                        <x-chart-line id="{{$portfolio->id}}" x-model="portfolio.id"></x-chart-line>
                     </div>
                 </section>
                 <div class="rounded-lg mb-6 border-slate-300 border bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800 md:p-6">
                     <h2 class="text-xl font-semibold text-gray-900 dark:text-white sm:text-2xl pb-4">{{__('Transaktionen')}}</h2>
-                    <div class="shadow-md sm:rounded-lg" x-data="{ transactions: [] }" x-init="transactions = await (await fetch(`/transaction/transactionsBySymbol/{{$symbol}}`)).json()">
+                    <div class="shadow-md sm:rounded-lg" x-data="{ transactions: [] }" x-init="transactions = await (await fetch(`/transaction/transactionsBySymbol/{{$portfolio->symbol}}`)).json()">
                         <div class="flex space-x-4">
                             <table class="table-fixed text-sm text-left text-gray-500 dark:text-gray-400 -sm:hidden empty-cells-hidden mx-auto my-auto w-full">
                                 <thead class="text-xs text-gray-700 uppercase bg-gray-200 dark:bg-gray-700 dark:text-gray-400">
@@ -100,7 +98,7 @@
                     </div>
                 </div>
                 <div class="rounded-lg mb-6 border-slate-300 border bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800 md:p-6">
-                    <div x-data="{ stockDetails: [] }" x-init="stockDetails = await (await fetch(`/instock/details/{{$symbol}}`)).json()">
+                    <div x-data="{ stockDetails: [] }" x-init="stockDetails = await (await fetch(`/instock/details/{{$portfolio->symbol}}`)).json()">
                         <div class="flex pt-4 flex-wrap min-w-0 gap-4">
                             <div class="rounded-lg space-x-4 mb-6 border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800 md:p-6">
                                 <p class="dark:text-white"> {{__('gesamte Anzahl')}}</p>

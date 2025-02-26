@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -25,8 +26,17 @@ class Transaction extends Model
     {
         return $this->belongsTo(Portfolio::class);
     }
-    public static function getAllShares()
+
+    public function scopeSells(Builder $query, $portfolioId)
     {
-        return InStock::select('symbol')->groupBy('symbol')->orderBy('symbol', 'asc')->get();
+        $query->where('type', 'sell')
+            ->where('portfolio_id', $portfolioId)
+            ->orderBy('transaction_at');
+    }
+    public function scopeBuys(Builder $query, $portfolioId)
+    {
+        $query->where('type', 'buy')
+            ->where('portfolio_id', $portfolioId)
+            ->orderBy('transaction_at');
     }
 }

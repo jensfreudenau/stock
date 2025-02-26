@@ -4,9 +4,9 @@ namespace App\APIHelper;
 
 abstract class Share
 {
-    protected ShareApi $shareApi;
+    protected ShareInterface $shareApi;
 
-    protected function __construct(ShareApi $shareAPI) {
+    protected function __construct(ShareInterface $shareAPI) {
         $this->shareApi = $shareAPI;
     }
 

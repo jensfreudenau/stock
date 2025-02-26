@@ -2,7 +2,6 @@
 
 namespace App\Services;
 
-use App\Models\Balance;
 use App\Models\Profit;
 use App\Models\Transaction;
 
@@ -18,15 +17,9 @@ class StatisticService
 
         $sellQuantity = $sell->quantity;
         $sellPrice = $sell->price;
-        $stockSymbol = $sell->symbol;
 
         // FIFO: Lade alle vorherigen Käufe, die noch Aktien haben
-        $buys = Transaction::where('type', 'buy')
-            ->where('symbol', $stockSymbol)
-            ->where('quantity', '>', 0)
-            ->orderBy('created_at', 'asc')
-            ->get();
-
+        $buys = Transaction::buys( $sell->portfolio_id)->where('quantity', '>', 0)->get();
         $profit = 0;
 
         foreach ($buys as $buy) {
@@ -49,7 +42,7 @@ class StatisticService
         }
         // Speichere den Gewinn in der Datenbank
         Profit::insert([
-            'symbol' => $stockSymbol,
+            'symbol' => $sell->symbol,
             'sell_id' => $sellId,
             'profit' => $profit,
             'transaction_at' => $transactionAt,
@@ -58,29 +51,23 @@ class StatisticService
         return true;
     }
 
-    public static function calculateCurrentValues($currentPrice, $symbol): array
+    public static function calculateCurrentValues($currentPrice, $portfolioId): array
     {
         if ($currentPrice === 0) {
             $currentPrice = 1;
         }
-        $buys = Transaction::where('type', 'buy')
-            ->where('symbol', $symbol)
-            ->orderBy('transaction_at', 'asc')
-            ->get();
-
+        $buys = Transaction::buys($portfolioId)->get();
         // Lade alle Verkäufe in chronologischer Reihenfolge
-        $sells = Transaction::where('type', 'sell')
-            ->where('symbol', $symbol)
-            ->orderBy('transaction_at', 'asc')
-            ->get();
+        $sells = Transaction::sells($portfolioId)->get();
 
         // Berechnung der gekauften Aktien und Investitionssumme
         $totalPurchased = 0;
         $investmentSum = 0;
-
+        $symbol = '';
         foreach ($buys as $buy) {
             $totalPurchased += $buy->buy_quantity;
             $investmentSum += $buy->buy_quantity * $buy->price;
+            $symbol = $buy->symbol;
         }
 
         // Berechnung der verkauften Aktien
@@ -124,26 +111,20 @@ class StatisticService
     }
 
 
-    public static function calculatePastValues($pastPrice, $symbol): array
+    public static function calculatePastValues($pastPrice, $portfolioId): array
     {
-        $buys = Transaction::where('type', 'buy')
-            ->where('symbol', $symbol)
-            ->orderBy('transaction_at', 'asc')
-            ->get();
-
+        $buys = Transaction::buys($portfolioId)->get();
         // Lade alle Verkäufe in chronologischer Reihenfolge
-        $sells = Transaction::where('type', 'sell')
-            ->where('symbol', $symbol)
-            ->orderBy('transaction_at', 'asc')
-            ->get();
+        $sells = Transaction::sells($portfolioId)->get();
 
         // Berechnung der gekauften Aktien und Investitionssumme
         $totalPurchased = 0;
         $investmentSum = 0;
-
+        $symbol = '';
         foreach ($buys as $buy) {
             $totalPurchased += $buy->buy_quantity;
             $investmentSum += $buy->buy_quantity * $buy->price;
+            $symbol = $buy->symbol;
         }
 
         $profit = 0;
@@ -180,24 +161,4 @@ class StatisticService
 
         return $currentValues;
     }
-
-    public function getLostWin(): float|int
-    {
-        return $this->lost_win;
-    }
-
-    public function save(): void
-    {
-        Balance::create(get_object_vars($this));
-    }
-
-    /**
-     * @param $sellAt
-     * @return mixed
-     */
-    public function getSum($sellAt): mixed
-    {
-        return $sellAt->sum('amount');
-    }
-
 }

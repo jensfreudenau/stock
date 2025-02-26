@@ -2,10 +2,9 @@
 
 namespace App\Console\Commands;
 
-use App\APIHelper\AlphaVantageApi;
-use App\APIHelper\DeutscheBoerseApi;
-
+use App\APIHelper\ETFApi;
 use App\APIHelper\FillShare;
+use App\APIHelper\SharesApi;
 use App\Models\Portfolio;
 use App\Models\Stock;
 use Carbon\Carbon;
@@ -40,30 +39,30 @@ class EndOfDay extends Command
             }
             $shares = null;
             if ($portfolio->share_type === 'etf') {
-                $shares = new FillShare($portfolio->symbol, new DeutscheBoerseApi());
-            }
-            else {
-                $shares = new FillShare($portfolio->symbol, new AlphaVantageApi());
+                $shares = new FillShare($portfolio->symbol, $portfolio->isin, new ETFApi());
+            } else {
+                $shares = new FillShare($portfolio->symbol, $portfolio->isin, new SharesApi());
             }
             if (empty($shares)) {
                 continue;
             }
-            $data = $shares->fillHistory();
-            if (empty($data)) {
+            $datas = $shares->fillHistory();
+            if (empty($datas)) {
                 continue;
             }
+
             if ($portfolio->share_type === 'etf') {
-                $all['symbol'] = $portfolio->symbol;
-                $all['isin'] = $portfolio->symbol;
-                $all['portfolio_id'] = $portfolio->id;
-                $all['stock_date'] = $data['stock_date'];
-                $all['open'] = $data['open'] * 100;
-                $all['low'] = $data['low'] * 100;
-                $all['high'] = $data['high'] * 100;
-                $all['close'] = $data['close'] * 100;
-                $all['volume'] = 0;
-                Stock::create($all);
-                continue;
+                foreach ($datas as $data) {
+                    $all['symbol'] = $portfolio->symbol;
+                    $all['isin'] = $portfolio->symbol;
+                    $all['portfolio_id'] = $portfolio->id;
+                    $all['stock_date'] = $data['stock_date'];
+                    $all['close'] = $data['close'];
+                    $all['volume'] = 0;
+                    Stock::create($all);
+                    continue 2;
+                }
+
             }
             $collect = collect($data);
             $filtered = $collect->where('stock_date', '>=', $stockDate);

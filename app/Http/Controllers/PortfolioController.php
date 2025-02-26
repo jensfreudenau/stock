@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\APIHelper\AlphaVantageApi;
-use App\APIHelper\DeutscheBoerseApi;
+use App\APIHelper\ETFApi;
 use App\APIHelper\FillShare;
+use App\APIHelper\SharesApi;
+use App\Models\Company;
 use App\Models\Portfolio;
 use App\Models\Stock;
 use Carbon\Carbon;
@@ -15,24 +17,25 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Redirector;
-use Illuminate\Support\Facades\Log;
 
 class PortfolioController extends Controller
 {
     public function index($active): Application|Factory|View
     {
-        return view('portfolio.index', compact('active'));
+        $portfolios = Portfolio::active($active)->orderBy('id')->get();
+        return view('portfolio.index', compact('active', 'portfolios'));
     }
 
-    public function show($symbol)
+    public function show($id): Application|Factory|View
     {
-        return view('portfolio.show', compact('symbol'));
+        $portfolio = Portfolio::where('id', $id)->first();
+        return view('portfolio.show', compact('portfolio'));
     }
 
     public function deactivate(Request $request): Application|Redirector|RedirectResponse
     {
         Portfolio::where('symbol', $request->symbol)->update(['active' => !$request->active]);
-        return redirect('/portfolio/index/'.$request->active);
+        return redirect('/portfolio/index/' . $request->active);
     }
 
     public function archive(): Application|Factory|View
@@ -45,34 +48,37 @@ class PortfolioController extends Controller
         Portfolio::where('symbol', $request->symbol)->update(['active' => $request->active]);
         return redirect('/portfolio/index/1');
     }
+
     public function update(Request $request): Application|Redirector|RedirectResponse
     {
         $portfolio = Portfolio::where('symbol', $request->symbol)->first();
-        $portfolioData = $this->companyInfoRequest($request->symbol, $portfolio->share_type);
+        $portfolioData = $this->setCompanyInfo($portfolio->id, $request->symbol, $portfolio->share_type);
+
         if ($portfolioData === false) {
             response()->json(['error' => 'Unable to fetch data'], 500);
             return redirect('/portfolio/index');
         }
-        Portfolio::where('symbol', $request->symbol)
-            ->update($portfolioData);
+        $company = Company::where('portfolio_id', $portfolio->id);
+        $company->update($portfolioData);
 
         return redirect('/portfolio/index/1');
     }
 
-    private function companyInfoRequest(string $symbol, string $shareType): false|array
+    private function companyInfoRequest(string $symbol, string $isin, string $shareType): false|array
     {
         if ($shareType === 'etf') {
-            $shares = new FillShare($symbol, new DeutscheBoerseApi());
+            $shares = new FillShare($symbol, $isin, new ETFApi());
         } else {
-            $shares = new FillShare($symbol, new AlphaVantageApi());
+            $shares = new FillShare($symbol, $isin, new SharesApi());
         }
 
         return $shares->fillCompanyInfo();
     }
 
-    public function details($symbol): JsonResponse
+    public function details($id): JsonResponse
     {
-        return response()->json(Portfolio::active()->where('symbol', $symbol)->orderBy('symbol')->first());
+        $portfolio = Portfolio::find($id)->with('company')->active()->orderBy('symbol')->first();
+        return response()->json($portfolio);
     }
 
     public function portfolios($active): JsonResponse
@@ -90,27 +96,32 @@ class PortfolioController extends Controller
         return response()->json(Portfolio::active(0)->orderBy('symbol')->get());
     }
 
-    public function analytics($symbol): JsonResponse
+    public function analytics($id): JsonResponse
     {
-        $portfolio = Portfolio::query()
-            ->where('symbol', $symbol)
-            ->get();
+        $portfolio = Portfolio::where('id', $id)->with('company')->active()->orderBy('symbol')->first();
         return response()->json($portfolio);
     }
 
     public function initial(Request $request): Application|Redirector|RedirectResponse
     {
-        $portfolioInfo = $this->companyInfoRequest($request->symbol, $request->share_type);
+        $symbol = $request->symbol;
+        if ($request->share_type === 'share') {
+            $symbol = $request->isin;;
+        }
+        $portfolioInfo = $this->companyInfoRequest($symbol, $request->isin, $request->share_type);
         if ($portfolioInfo === false) {
             response()->json(['error' => 'Unable to fetch data'], 500);
             return redirect('/portfolio/index');
         }
         $portfolioInfo['share_type'] = $request->share_type;
+        $portfolioInfo['currency'] = $request->currency;
         $portfolioInfo['active'] = $request->active;
-        $portfolioInfo['active_since'] =(new Carbon($request->active_since))->format('Y-m-d');
+        $portfolioInfo['isin'] = $request->isin;
+        $portfolioInfo['symbol'] = $request->symbol;
+        $portfolioInfo['active_since'] = (new Carbon($request->active_since))->format('Y-m-d');
         $portfolio = Portfolio::create($portfolioInfo);
 
-        $histories = $this->historyRequest($request->symbol, $request->share_type);
+        $histories = $this->historyRequest($portfolio->ing_id, $symbol, $request->share_type);
         if ($histories === false) {
             response()->json(['error' => 'Unable to fetch data'], 500);
             return redirect('/portfolio/index');
@@ -119,17 +130,32 @@ class PortfolioController extends Controller
             $history['portfolio_id'] = $portfolio->id;
             Stock::create($history);
         }
+        $companyInfo = $this->setCompanyInfo($portfolio->id, $request->symbol, $portfolio->share_type);
+        Company::create($companyInfo);
+
         return redirect('/transaction/index');
     }
 
-    private function historyRequest(string $symbol, string $shareType): false|array
+
+    private function setCompanyInfo($portfolioId, $symbol, $shareType): false|array
+    {
+        $companyInfo = (new AlphaVantageApi($symbol, $shareType))->fillCompanyInfo();
+        if ($companyInfo) {
+            $companyInfo['portfolio_id'] = $portfolioId;
+            return $companyInfo;
+        }
+        return false;
+    }
+
+
+    private function historyRequest(string $isin, string $symbol, string $shareType): false|array
     {
         if ($shareType === 'etf') {
-            $shares = new FillShare($symbol, new DeutscheBoerseApi());
+            $shares = new FillShare($symbol, $isin, new ETFApi());
         } else {
-            $shares = new FillShare($symbol, new AlphaVantageApi());
+            $shares = new FillShare($symbol, $isin, new SharesApi());
         }
 
-        return $shares->fillHistory();
+        return $shares->fillHistory($isin);
     }
 }

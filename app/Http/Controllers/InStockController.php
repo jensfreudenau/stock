@@ -21,7 +21,7 @@ class InStockController extends Controller
     public function details($symbol)
     {
         $price = Stock::where('symbol', $symbol)->orderBy('id', 'desc')->first();
-        $currentValues = StatisticService::calculateCurrentValues($price->close, $symbol);
+        $currentValues = StatisticService::calculateCurrentValues($price->close, $price->portfolio_id);
 
         return response()->json($currentValues);
     }

@@ -5,7 +5,7 @@ namespace App\APIHelper;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
 
-class DeutscheBoerseApi extends ApiCall implements ShareApi
+class ETFApi extends ApiCall implements ShareInterface
 {
     public function fillCompanyInfo($symbol): array
     {
@@ -24,26 +24,21 @@ class DeutscheBoerseApi extends ApiCall implements ShareApi
         return $portfolio;
     }
 
-    public function fillHistory($symbol): array
+    public function fillHistory(string $isin, string $symbol): array
     {
-        #FR0010717090
-        $historyUrl = 'https://api.boerse-frankfurt.de/v1/data/price_information/single?isin=' . $symbol . '&mic=XFRA';
-        $historyData = $this->call($historyUrl);
-        $data = [];
-        if (empty($historyData)) {
-            Log::error('nothing found in :' . $historyUrl);
+        echo $url ='https://component-api.wertpapiere.ing.de/api/v1/charts/shm/' . $isin . '?timeRange=OneYear&exchangeId=2779&currencyId=814';
+        $data = $this->call($url);
+        if (empty($data) || !array_key_exists('instruments', $data)) {
+            Log::error('nothing found in :' . $url);
             return [];
         }
-
-        $data['stock_date'] = Carbon::parse($historyData['timestampLastPrice'], 'Europe/Berlin')->format('Y-m-d');
-        $data['open'] = $historyData['lastPrice'];
-        $data['close'] = $historyData['lastPrice'];
-        $data['low'] = $historyData['lastPrice'];
-        $data['high'] = $historyData['lastPrice'];
-        $data['volume'] = 0;
-        $data['symbol'] = $symbol;
-        $data['isin'] = $symbol;
-
-        return $data;
+        $shareValue = [];
+        foreach ($data['instruments'][0]['data'] as $key => $item) {
+            $shareValue[$key]['symbol'] = $symbol;
+            $shareValue[$key]['isin'] = $isin;
+            $shareValue[$key]['stock_date'] = Carbon::createFromTimestampMs($item[0])->format('Y-m-d');
+            $shareValue[$key]['close'] = $item[1];
+        }
+        return $shareValue;
     }
 }

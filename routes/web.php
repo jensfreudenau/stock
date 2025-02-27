@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ConfigurationController;
 use App\Http\Controllers\ScrapingController;
+use App\Http\Controllers\StopLossController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\PortfolioController;
 use App\Http\Controllers\InStockController;
@@ -55,6 +56,15 @@ Route::get('/portfolio/details/{symbol}', [PortfolioController::class, 'details'
 
 Route::get('/configuration/index',[ConfigurationController::class, 'index'])->name('configuration.index');
 Route::post('/configuration/update',[ConfigurationController::class, 'update'])->name('configuration.update');
+Route::post('/configuration/add', [ConfigurationController::class, 'add'])->name('configuration.add');
+Route::post('/configuration/store', [ConfigurationController::class, 'store'])->name('configuration.store');
+Route::delete('/configuration/{configuration}', [ConfigurationController::class, 'destroy'])->name('configuration.destroy');
+
+Route::get('/stoploss/index',[StopLossController::class, 'index'])->name('stoploss.index');
+Route::post('/stoploss/update',[StopLossController::class, 'update'])->name('stoploss.update');
+Route::post('/stoploss/add', [StopLossController::class, 'add'])->name('stoploss.add');
+Route::post('/stoploss/store', [StopLossController::class, 'store'])->name('stoploss.store');
+Route::delete('/stoploss/{stoploss}', [StopLossController::class, 'destroy'])->name('stoploss.destroy');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

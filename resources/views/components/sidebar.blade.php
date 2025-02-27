@@ -32,10 +32,17 @@
                 </a>
             </li>
             <li>
-                <a href="/adjust/index/1"
+                <a href="/configuration/index"
                    class="flex items-center p-2 text-base font-normal text-gray-100 rounded-lg dark:text-white hover:bg-gray-900 dark:hover:bg-gray-700">
                     <i class="pl-1 fa-solid fa-adjust"></i>
                     <span class="flex-1 ml-3 whitespace-nowrap">{{__('Einstellungen')}}</span>
+                </a>
+            </li>
+            <li>
+                <a href="/stoploss/index"
+                   class="flex items-center p-2 text-base font-normal text-gray-100 rounded-lg dark:text-white hover:bg-gray-900 dark:hover:bg-gray-700">
+                    <i class="pl-1 fa-solid fa-adjust"></i>
+                    <span class="flex-1 ml-3 whitespace-nowrap">{{__('Stop Loss')}}</span>
                 </a>
             </li>
         </ul>

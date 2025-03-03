@@ -2,24 +2,29 @@
 
 namespace App\DTOs\Mappers;
 
+use App\DTOs\EtfDTO;
 use App\DTOs\GeneralDTO;
-use App\DTOs\UserDTO;
-use App\DTOs\CustomerDTO;
+
+use App\DTOs\IngDTO;
 
 class DTOMapper
 {
-    public static function mapToGeneralDTO(object $dto): GeneralDTO
+    public static function mapToGeneralDTO(object $dto, $portfolio): GeneralDTO
     {
         return match (get_class($dto)) {
-            UserDTO::class => new GeneralDTO(
-                id: (string) $dto->userId,
-                name: $dto->fullName,
-                email: $dto->contactEmail
+            EtfDTO::class => new GeneralDTO(
+                stockDate: $dto->item0,
+                close: $dto->item1,
+                portfolioId:  $portfolio->id,
+                symbol: $portfolio->symbol,
+                isin: $portfolio->isin,
             ),
-            CustomerDTO::class => new GeneralDTO(
-                id: $dto->customerNumber,
-                name: $dto->companyName,
-                email: $dto->businessEmail
+            IngDTO::class => new GeneralDTO(
+                stockDate: $dto->item0,
+                close: $dto->item1,
+                portfolioId:  $portfolio->id,
+                symbol: $portfolio->symbol,
+                isin: $portfolio->isin,
             ),
             default => throw new \InvalidArgumentException("Unknown DTO type")
         };

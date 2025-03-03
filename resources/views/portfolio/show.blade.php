@@ -3,7 +3,8 @@
     <x-header>
         <x-slot:title>{{__('Portfolio')}}</x-slot:title>
     </x-header>
-    <h2 class="text-xl font-semibold text-gray-900 dark:text-white sm:text-2xl">{{$portfolio->name}}</h2>
+
+    <h2 class="text-xl font-semibold text-gray-900 dark:text-white sm:text-2xl">{{$portfolio->company->name}}</h2>
     <h3 class="text-base  text-gray-900 dark:text-white sm:text-base">{{$portfolio->symbol}}</h3>
     <div class="mt-1 pt-1 sm:mt-8 md:gap-6 lg:flex lg:items-start xl:gap-8">
         <div class="mx-auto w-full flex-none lg:max-w-2xl xl:max-w-4xl">

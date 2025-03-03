@@ -2,7 +2,7 @@
 
 namespace App\APIHelper;
 
-abstract class Share
+abstract class ShareAbstract
 {
     protected ShareInterface $shareApi;
 
@@ -12,4 +12,5 @@ abstract class Share
 
     public abstract function fillCompanyInfo();
     public abstract function fillHistory();
+    public abstract function fillCurrent();
 }

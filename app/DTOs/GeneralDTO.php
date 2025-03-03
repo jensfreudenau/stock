@@ -5,19 +5,23 @@ namespace App\DTOs;
 class GeneralDTO
 {
     public function __construct(
-        public string $id,
-        public string $name,
-        public string $email,
-        public ?string $phone = null
+        public string $stockDate,
+        public int $close,
+        public ?int $portfolioId = null,
+        public ?string $symbol = null,
+        public ?int $volume = null,
+        public ?string $isin = null,
     ) {}
 
     public static function fromArray(array $data): self
     {
         return new self(
-            id: $data['id'],
-            name: $data['name'],
-            email: $data['email'] ?? '',
-            phone: $data['phone'] ?? null
+            stockDate: $data['stock_date'],
+            close: $data['close'],
+            portfolioId: $data['portfolio_id'] ?? null,
+            symbol: $data['symbol'] ?? '',
+            volume: $data['volume'] ?? null,
+            isin: $data['isin'] ?? null
         );
     }
 }

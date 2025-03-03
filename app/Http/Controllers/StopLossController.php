@@ -25,12 +25,21 @@ class StopLossController extends Controller
 
     public function store(Request $request): Application|Redirector|RedirectResponse
     {
+        
+        request()->validate([
+            'portfolio_id' => ['required'],
+            'value' => ['integer', 'min:1'],
+        ]);
         StopLoss::create($request->all());
         return redirect('/stoploss/index');
     }
 
     public function update(Request $request): Application|Redirector|RedirectResponse
     {
+        request()->validate([
+            'portfolio_id' => ['required'],
+            'value' => ['integer', 'min:1'],
+        ]);
         $stopLoss = StopLoss::find($request->id);
         $stopLoss->update($request->all());
         return redirect('/stoploss/index');

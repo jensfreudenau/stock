@@ -11,4 +11,10 @@ class Configuration extends Model
         'value',
         'name',
         ];
+
+    public static function getHistory(): bool
+    {
+        $configuration = self::where('key', 'get_history')->first();
+        return $configuration && $configuration->value;
+    }
 }

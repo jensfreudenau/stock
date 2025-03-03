@@ -2,8 +2,12 @@
 
 namespace App\APIHelper;
 
+use App\DTOs\GeneralDTO;
+use App\Models\Portfolio;
+
 interface ShareInterface
 {
-    public function fillCompanyInfo(string $symbol);
-    public function fillHistory(string $isin, string $symbol);
+    public function fillCompanyInfo(Portfolio $portfolio): false|array;
+    public function fillHistory(Portfolio $portfolio): false|array;
+    public function fillCurrent(Portfolio $portfolio): false|GeneralDTO;
 }

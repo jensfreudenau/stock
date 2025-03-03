@@ -17,7 +17,6 @@ Route::get('/', function () {
 Route::get('/stock', function () {
     return view('stock');
 });
-Route::get('/v1/scraping/scrape-quotes', [ScrapingController::class, 'scrapeQuotes']);
 Route::get('/statistic', [StatisticController::class, 'index'])->name('statistic');
 Route::get('/statistic/getShareSalesVolumeByYear/{year}', [StatisticController::class, 'getShareSalesVolumeByYear'])->name('statistic.getShareSalesVolumeByYear');
 Route::get('/statistic/getProfitsByYear/{year}', [StatisticController::class, 'getProfitsByYear'])->name('statistic.getProfitsByYear');

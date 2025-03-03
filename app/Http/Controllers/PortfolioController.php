@@ -64,12 +64,12 @@ class PortfolioController extends Controller
         return redirect('/portfolio/index/1');
     }
 
-    private function companyInfoRequest(string $symbol, string $isin, string $shareType): false|array
+    private function companyInfoRequest(Portfolio $portfolio, string $shareType): false|array
     {
         if ($shareType === 'etf') {
-            $shares = new FillShare($symbol, $isin, new ETFApi());
+            $shares = new FillShare($portfolio, new ETFApi());
         } else {
-            $shares = new FillShare($symbol, $isin, new SharesApi());
+            $shares = new FillShare($portfolio, new SharesApi());
         }
 
         return $shares->fillCompanyInfo();
@@ -121,7 +121,7 @@ class PortfolioController extends Controller
         $portfolioInfo['active_since'] = (new Carbon($request->active_since))->format('Y-m-d');
         $portfolio = Portfolio::create($portfolioInfo);
 
-        $histories = $this->historyRequest($portfolio->ing_id, $symbol, $request->share_type);
+        $histories = $this->historyRequest($portfolio, $request->share_type);
         if ($histories === false) {
             response()->json(['error' => 'Unable to fetch data'], 500);
             return redirect('/portfolio/index');
@@ -137,9 +137,9 @@ class PortfolioController extends Controller
     }
 
 
-    private function setCompanyInfo($portfolioId, $symbol, $shareType): false|array
+    private function setCompanyInfo($portfolioId, $shareType): false|array
     {
-        $companyInfo = (new AlphaVantageApi($symbol, $shareType))->fillCompanyInfo();
+        $companyInfo = (new AlphaVantageApi($shareType))->fillCompanyInfo();
         if ($companyInfo) {
             $companyInfo['portfolio_id'] = $portfolioId;
             return $companyInfo;
@@ -148,14 +148,14 @@ class PortfolioController extends Controller
     }
 
 
-    private function historyRequest(string $isin, string $symbol, string $shareType): false|array
+    private function historyRequest($portfolio, string $shareType): false|array
     {
         if ($shareType === 'etf') {
-            $shares = new FillShare($symbol, $isin, new ETFApi());
+            $shares = new FillShare($portfolio, new ETFApi());
         } else {
-            $shares = new FillShare($symbol, $isin, new SharesApi());
+            $shares = new FillShare($portfolio, new SharesApi());
         }
 
-        return $shares->fillHistory($isin);
+        return $shares->fillHistory();
     }
 }

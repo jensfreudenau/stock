@@ -25,6 +25,7 @@ class StatisticController extends Controller
         $activeSymbols = [];
         $profitTemp = 0;
         foreach ($portfolios as $key => $portfolio) {
+            $activeSymbols[$key]['id'] = $portfolio->id;
             $activeSymbols[$key]['symbol'] = $portfolio->symbol;
             $activeSymbols[$key]['name'] = $portfolio->name;
             $price = Stock::where('symbol', $portfolio->symbol)->orderBy('id', 'desc')->first();
@@ -39,6 +40,7 @@ class StatisticController extends Controller
             foreach ($profits as $profitAction) {
                 $profit += $profitAction->profit;
             }
+            $archivedSymbols[$key]['id'] = $portfoliosArchive->id;
             $archivedSymbols[$key]['symbol'] = $portfoliosArchive->symbol;
             $archivedSymbols[$key]['name'] = $portfoliosArchive->name;
         }

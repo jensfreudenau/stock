@@ -6,7 +6,7 @@
     <h5 class="dark:text-white text-3xl mb-3">aktive Posten</h5>
     @foreach($activeSymbols as $activeSymbol)
         <h5 class="dark:text-white text-5xl mb-3">
-            <a :href="`/portfolio/show/{{$activeSymbol['symbol']}}`" class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700" >{{$activeSymbol['symbol']}}&nbsp;{!! Str::limit($activeSymbol['name'], 45, ' ...') !!} </a>
+            <a :href="`/portfolio/show/{{$activeSymbol['id']}}`" class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700" >{{$activeSymbol['symbol']}}&nbsp;{!! Str::limit($activeSymbol['name'], 45, ' ...') !!} </a>
         </h5>
         <div class="rounded-lg mb-6 border-slate-300 border bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800 md:p-6">
             <div x-data="{ stockDetails: [] }" x-init="stockDetails = await (await fetch(`/statistic/active/{{$activeSymbol['symbol']}}`)).json()">
@@ -58,7 +58,7 @@
     <h2 class="dark:text-white text-3xl pt-7 mb-3">ehemalige Posten</h2>
     @foreach($archivedSymbols as $archivedSymbol)
         <h5 class="dark:text-white text-5xl mb-3">
-            <a :href="`/portfolio/show/{{$archivedSymbol['symbol']}}`" class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700" >{{$archivedSymbol['symbol']}}&nbsp;{{$archivedSymbol['name']}} </a>
+            <a :href="`/portfolio/show/{{$archivedSymbol['id']}}`" class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700" >{{$archivedSymbol['symbol']}}&nbsp;{{$archivedSymbol['name']}} </a>
         </h5>
             <div class="rounded-lg mb-6 border-slate-300 border bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800 md:p-6">
             <div x-data="{ stockDetails: [] }" x-init="stockDetails = await (await fetch(`/statistic/archive/{{$archivedSymbol['symbol']}}`)).json()">

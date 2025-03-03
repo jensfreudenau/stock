@@ -32,7 +32,7 @@ return new class extends Migration
             $table->integer('analyst_rating_strong_sell')->nullable();
             $table->integer('52_week_high')->nullable();
             $table->integer('52_week_low')->nullable();
-            $table->timestamps()->nullable();
+            $table->timestamps();
         });
     }
 

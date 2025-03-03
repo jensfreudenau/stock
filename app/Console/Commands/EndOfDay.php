@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use App\APIHelper\ETFApi;
 use App\APIHelper\FillShare;
 use App\APIHelper\SharesApi;
+use App\Models\Configuration;
 use App\Models\Portfolio;
 use App\Models\Stock;
 use Carbon\Carbon;
@@ -29,52 +30,49 @@ class EndOfDay extends Command
     public function handle(): void
     {
         $portfolios = Portfolio::where('active', true)->get();
-
         foreach ($portfolios as $portfolio) {
-            $stocks = Stock::where('portfolio_id', $portfolio->id)->orderBy('stock_date', 'desc')->first();
-            if (empty($stocks)) {
-                $stockDate = Carbon::now();
-            } else {
-                $stockDate = $stocks->stock_date;
-            }
-            $shares = null;
             if ($portfolio->share_type === 'etf') {
-                $shares = new FillShare($portfolio->symbol, $portfolio->isin, new ETFApi());
+                $shares = new FillShare($portfolio, new ETFApi());
+            }
+            else {
+                $shares = new FillShare($portfolio, new SharesApi());
+            }
+
+            if (Configuration::getHistory()) {
+                $this->insertHistory($shares);
             } else {
-                $shares = new FillShare($portfolio->symbol, $portfolio->isin, new SharesApi());
-            }
-            if (empty($shares)) {
-                continue;
-            }
-            $datas = $shares->fillHistory();
-            if (empty($datas)) {
-                continue;
-            }
-
-            if ($portfolio->share_type === 'etf') {
-                foreach ($datas as $data) {
-                    $all['symbol'] = $portfolio->symbol;
-                    $all['isin'] = $portfolio->symbol;
-                    $all['portfolio_id'] = $portfolio->id;
-                    $all['stock_date'] = $data['stock_date'];
-                    $all['close'] = $data['close'];
-                    $all['volume'] = 0;
-                    Stock::create($all);
-                    continue 2;
-                }
-
-            }
-            $collect = collect($data);
-            $filtered = $collect->where('stock_date', '>=', $stockDate);
-
-            foreach ($filtered->all() as $all) {
-                $all['portfolio_id'] = $portfolio->id;
-                $all['open'] = $all['open'] * 100;
-                $all['low'] = $all['low'] * 100;
-                $all['high'] = $all['high'] * 100;
-                $all['close'] = $all['close'] * 100;
-                Stock::create($all);
+                $this->insertCurrent($shares);
             }
         }
+    }
+
+    private function insertCurrent($shares): void
+    {
+        $shareValue = $shares->fillCurrent();
+        if (empty($shareValue)) {
+            return;
+        }
+        $this->updateOrCreate($shareValue);
+    }
+
+    private function insertHistory($shares): void
+    {
+        $shareValues = $shares->fillHistory();
+        if (empty($shareValues)) {
+            return;
+        }
+        foreach ($shareValues as $shareValue) {
+            $this->updateOrCreate($shareValue);
+        }
+    }
+
+    private function updateOrCreate($shareValue): void
+    {
+        $allOld['portfolio_id'] = $shareValue->portfolioId;
+        $allOld['stock_date'] = $shareValue->stockDate;
+        $allNew['symbol'] = $shareValue->symbol;
+        $allNew['isin'] = $shareValue->symbol;
+        $allNew['close'] = $shareValue->close;
+        Stock::updateOrCreate($allOld, $allNew);
     }
 }

@@ -38,7 +38,6 @@ class SharesApi extends ApiCall implements ShareInterface
 
     public function fillHistory(Portfolio $portfolio): array
     {
-        dump('nono hist');
         $url = 'https://component-api.wertpapiere.ing.de/api/v1/charts/shm/' . $portfolio->isin . '?timeRange=OneYear&exchangeId=2779&currencyId=814';
         $data = $this->call($url);
         if (empty($data) || !array_key_exists('instruments', $data)) {

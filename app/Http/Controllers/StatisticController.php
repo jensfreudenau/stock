@@ -13,8 +13,8 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Foundation\Application;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Number;
-use Illuminate\Support\Str;
 
 
 class StatisticController extends Controller
@@ -26,6 +26,7 @@ class StatisticController extends Controller
         $profitTemp = 0;
         foreach ($portfolios as $key => $portfolio) {
             $activeSymbols[$key]['id'] = $portfolio->id;
+            $activeSymbols[$key]['portfolio_id'] = $portfolio->id;
             $activeSymbols[$key]['symbol'] = $portfolio->symbol;
             $activeSymbols[$key]['name'] = $portfolio->name;
             $price = Stock::where('symbol', $portfolio->symbol)->orderBy('id', 'desc')->first();
@@ -36,7 +37,7 @@ class StatisticController extends Controller
         $archivedSymbols = [];
         $profit = 0;
         foreach ($portfoliosArchives as $key => $portfoliosArchive) {
-            $profits = Profit::where('symbol', $portfoliosArchive->symbol)->get();
+            $profits = Profit::where('portfolio_id', $portfoliosArchive->id)->get();
             foreach ($profits as $profitAction) {
                 $profit += $profitAction->profit;
             }
@@ -118,27 +119,31 @@ class StatisticController extends Controller
         return response()->json($performance);
     }
 
-    public function active(
-        $symbol
-    ): JsonResponse {
-        $price = Stock::where('symbol', $symbol)->orderBy('id', 'desc')->first();
-        $currentValues = StatisticService::calculateCurrentValues($price->close, $price->portfolio_id);
+    public function active($portfolioId): JsonResponse
+    {
+        $price = Stock::where('portfolio_id', $portfolioId)->orderBy('id', 'desc')->first();
+        $currentValues = 0;
+        if($price) {
+            $currentValues = StatisticService::calculateCurrentValues($price->close, $price->portfolio_id);
+        }
 
         return response()->json($currentValues);
     }
 
-    public function archive(
-        $symbol
-    ): JsonResponse {
-        $price = Stock::where('symbol', $symbol)->orderBy('id', 'desc')->first();
-        $currentValues = StatisticService::calculatePastValues($price->close, $price->portfolio_id);
+    public function archive($portfolioId): JsonResponse
+    {
+Log::debug($portfolioId);
+        $price = Stock::where('portfolio_id', $portfolioId)->orderBy('id', 'desc')->first();
+        $currentValues = 0;
+        if($price) {
+            $currentValues = StatisticService::calculatePastValues($price->close, $price->portfolio_id);
+        }
 
         return response()->json($currentValues);
     }
 
-    public function getProfitsByYear(
-        $year
-    ): JsonResponse {
+    public function getProfitsByYear($year): JsonResponse
+    {
         $date = Carbon::createFromDate($year, 1, 1);
         $startOfYear = $date->copy()->startOfYear()->format('Y-m-d');
         $endOfYear = $date->copy()->endOfYear()->format('Y-m-d');

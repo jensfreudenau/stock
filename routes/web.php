@@ -20,10 +20,10 @@ Route::get('/stock', function () {
 Route::get('/statistic', [StatisticController::class, 'index'])->name('statistic');
 Route::get('/statistic/getShareSalesVolumeByYear/{year}', [StatisticController::class, 'getShareSalesVolumeByYear'])->name('statistic.getShareSalesVolumeByYear');
 Route::get('/statistic/getProfitsByYear/{year}', [StatisticController::class, 'getProfitsByYear'])->name('statistic.getProfitsByYear');
-Route::get('/statistic/chart/{symbol}', [StatisticController::class, 'chart'])->name('statistic.chart');
-Route::get('/statistic/sharePerformance/{symbol}', [StatisticController::class, 'sharePerformance'])->name('statistic.sharePerformance');
-Route::get('/statistic/active/{symbol}', [StatisticController::class, 'active'])->name('statistic.active');
-Route::get('/statistic/archive/{symbol}', [StatisticController::class, 'archive'])->name('statistic.archive');
+Route::get('/statistic/chart/{portfolioId}', [StatisticController::class, 'chart'])->name('statistic.chart');
+Route::get('/statistic/sharePerformance/{portfolioId}', [StatisticController::class, 'sharePerformance'])->name('statistic.sharePerformance');
+Route::get('/statistic/active/{portfolioId}', [StatisticController::class, 'active'])->name('statistic.active');
+Route::get('/statistic/archive/{portfolioId}', [StatisticController::class, 'archive'])->name('statistic.archive');
 
 Route::get('instock/shares', [InStockController::class, 'shares'])->name('instock.shares');
 Route::get('instock/details/{symbol}', [InStockController::class, 'details'])->name('instock.details');

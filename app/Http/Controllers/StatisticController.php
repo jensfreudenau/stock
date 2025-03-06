@@ -12,10 +12,7 @@ use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Foundation\Application;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Number;
-
 
 class StatisticController extends Controller
 {
@@ -54,14 +51,22 @@ class StatisticController extends Controller
     public function chart($id): JsonResponse
     {
         $portfolio = Portfolio::where('id', $id)->first();
-
         $chartValues = Stock::query()
-            ->select(DB::raw("DATE_FORMAT(stock_date, '%d.%m.%Y') AS stock_date"), 'close')
+//            ->select(DB::raw("DATE_FORMAT(stock_date, '%d.%m.%Y') AS stock_date"), 'close')
             ->where('portfolio_id', $id)
             ->where('stock_date', '>=', $portfolio->active_since)
+            ->orderBy('stock_date')
             ->pluck('close', 'stock_date');
+        //x: '2016-12-25', y: 20
+        $data = [];
+        $chartData = [];
+        foreach ($chartValues as $key => $chartValue) {
+            $data['x'] = $key;
+            $data['y'] = $chartValue/100;
+            $chartData[] = $data;
+        }
 
-        return response()->json($chartValues);
+        return response()->json($chartData);
     }
 
     public function sharePerformance($portfolioId): JsonResponse
@@ -123,7 +128,7 @@ class StatisticController extends Controller
     {
         $price = Stock::where('portfolio_id', $portfolioId)->orderBy('id', 'desc')->first();
         $currentValues = 0;
-        if($price) {
+        if ($price) {
             $currentValues = StatisticService::calculateCurrentValues($price->close, $price->portfolio_id);
         }
 
@@ -132,10 +137,9 @@ class StatisticController extends Controller
 
     public function archive($portfolioId): JsonResponse
     {
-Log::debug($portfolioId);
         $price = Stock::where('portfolio_id', $portfolioId)->orderBy('id', 'desc')->first();
         $currentValues = 0;
-        if($price) {
+        if ($price) {
             $currentValues = StatisticService::calculatePastValues($price->close, $price->portfolio_id);
         }
 

@@ -45,6 +45,13 @@
                     <span class="flex-1 ml-3 whitespace-nowrap">{{__('Stop Loss')}}</span>
                 </a>
             </li>
+            <li>
+                <a href="/savingsplan/index"
+                   class="flex items-center p-2 text-base font-normal text-gray-100 rounded-lg dark:text-white hover:bg-gray-900 dark:hover:bg-gray-700">
+                    <i class="fa-solid fa-coins"></i>
+                    <span class="flex-1 ml-3 whitespace-nowrap">{{__('Sparplan')}}</span>
+                </a>
+            </li>
         </ul>
     </div>
 </aside>

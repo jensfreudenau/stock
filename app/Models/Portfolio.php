@@ -54,8 +54,23 @@ class Portfolio extends Model
         return $this->hasMany(Transaction::class);
     }
 
+    public function stopLosses(): HasMany
+    {
+        return $this->hasMany(StopLoss::class);
+    }
+
+    public function savingsPlans(): HasMany
+    {
+        return $this->hasMany(SavingsPlan::class);
+    }
+
     public function scopeActive(Builder $query, $active = 1): void
     {
         $query->where('active', $active);
+    }
+
+    public static function getInfoWithCompany($id): self
+    {
+        return self::where('id', $id)->with('company')->active()->orderBy('symbol')->first();
     }
 }

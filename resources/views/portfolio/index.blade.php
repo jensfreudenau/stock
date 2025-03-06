@@ -41,17 +41,17 @@
                                 <div class="w-full min-w-0 flex-1 space-y-4 md:order-2 ">
                                     <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">{{ $portfolio->symbol }}</h5>
                                     <a :href="`/portfolio/show/{{ $portfolio->id }}`" class="text-blue-500 underline">Details</a>
-
-
                                       <p class="text-base font-medium text-gray-900 hover:underline dark:text-white">{{ $portfolio->description }}</p>
+                                    @if($portfolio->share_type === 'share')
                                     <form class="pb-3" action="{{ route('portfolio.update') }}" method="POST">
                                         @csrf
-                                        <input type="hidden" name="symbol" value="{{ $portfolio->symbol }}">
+                                        <input type="hidden" name="id" value="{{ $portfolio->id }}">
                                         <button type="submit"
                                                 class="block text-white bg-orange-500 hover:bg-orange-700 focus:ring-4 focus:outline-none focus:ring-orange-700 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-orange-600 dark:hover:bg-orange-700 dark:focus:ring-orange-800">
                                             {{__('update Firma')}}
                                         </button>
                                     </form>
+                                    @endif
                                 </div>
                                 <div class=" gap-4 pr-4">
                                     <div
@@ -84,7 +84,9 @@
                                         </form>
                                     </div>
                                     <div class="md:w-32 lg:w-96 md:48">
+                                        @if($portfolio->share_type === 'share')
                                         <x-chart-bar :id="$portfolio->id"></x-chart-bar>
+                                        @endif
                                     </div>
                                 </div>
                             </div>

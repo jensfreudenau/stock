@@ -19,7 +19,7 @@
                     <div class="rounded-lg mb-6 border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800 md:p-6">
                         <div class="space-y-2 md:flex md:gap-2 md:space-y-0 ">
                             <div class="w-full min-w-0 flex-1 space-y-4 md:order-2">
-                                <p class="font-normal text-gray-700 dark:text-gray-400" x-text="portfolio.company.name">Name</p>
+                                <p class="font-normal text-gray-700 dark:text-gray-400" x-text="portfolio.company.name">{{__('Name')}}</p>
                                 <a href="#"
                                    class="text-base font-medium text-gray-900 hover:underline dark:text-white"
                                    x-text="portfolio.description"></a>

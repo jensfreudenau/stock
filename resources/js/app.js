@@ -3,12 +3,12 @@ import './bootstrap';
 import 'flowbite';
 import Alpine from 'alpinejs';
 import money from 'alpinejs-money';
-import ApexCharts from 'apexcharts';
 import Chart from 'chart.js/auto';
+import 'chartjs-adapter-date-fns';
+import {de} from 'date-fns/locale';
 Alpine.plugin(money);
 window.Chart = Chart;
 window.Alpine = Alpine;
-window.ApexCharts = ApexCharts;
 Alpine.start();
 
 function initBarChart($id, $symbol) {
@@ -53,8 +53,6 @@ function barChart(data, $id) {
 }
 
 function initChartLine($id, $symbol) {
-    console.log($id);
-    console.log($symbol);
     fetch(`/statistic/chart/` + $symbol)
         .then(res => res.json())
         .then(data => {
@@ -73,16 +71,25 @@ function chartLine(data, $id) {
             }]
         },
         options: {
+
             scales: {
+
                 x: {
-                    ticks: {
-                        display: true
+                    type: 'time',
+                    time: {
+                        unit: 'day',
+                        tooltipFormat: 'PPP', // z. B. "1. März 2024"
+                    },
+                    adapters: {
+                        date: {
+                            locale: de // Deutsche Lokalisierung
+                        }
                     }
                 },
                 y: {
                     ticks: {
                         callback: function(val) {
-                            return new Intl.NumberFormat("de-DE", { style: "currency", currency: "EUR" }).format(val/100)
+                            return new Intl.NumberFormat("de-DE", { style: "currency", currency: "EUR" }).format(val)
                         },
                     },
                 },

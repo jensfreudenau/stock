@@ -13,12 +13,12 @@ class SharesApi extends ApiCall implements ShareInterface
 {
     public function fillCompanyInfo(Portfolio $portfolio): false|array
     {
-        $url = 'https://component-api.wertpapiere.ing.de/api/v1/components/instrumentheader/' . $portfolio->symbol;
+        $url = 'https://component-api.wertpapiere.ing.de/api/v1/components/instrumentheader/' . $portfolio->isin;
         $data = $this->call($url);
         if ($data === false) {
             return false;
         }
-        $urlDescription = 'https://component-api.wertpapiere.ing.de/api/v1/components/description/' . $portfolio->symbol;
+        $urlDescription = 'https://component-api.wertpapiere.ing.de/api/v1/components/description/' . $portfolio->isin;
         $dataDescription = $this->call($urlDescription);
         if ($dataDescription === false) {
             $dataDescription = ['description' => ''];

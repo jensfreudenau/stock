@@ -24,6 +24,7 @@ class Stock extends Model
         'stock_date' => 'date:d.m.Y',
         'price' => Money::class
     ];
+
     public function portfolio(): BelongsTo
     {
         return $this->belongsTo(Portfolio::class);

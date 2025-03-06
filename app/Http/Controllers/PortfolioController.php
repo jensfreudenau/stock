@@ -45,14 +45,14 @@ class PortfolioController extends Controller
 
     public function activate(Request $request): Application|Redirector|RedirectResponse
     {
-        Portfolio::where('symbol', $request->symbol)->update(['active' => $request->active]);
+        Portfolio::where('id', $request->id)->update(['active' => $request->active]);
         return redirect('/portfolio/index/1');
     }
 
     public function update(Request $request): Application|Redirector|RedirectResponse
     {
-        $portfolio = Portfolio::where('symbol', $request->symbol)->first();
-        $portfolioData = $this->setCompanyInfo($portfolio->id, $request->symbol, $portfolio->share_type);
+        $portfolio = Portfolio::where('id', $request->id)->first();
+        $portfolioData = $this->setCompanyInfo($portfolio);
 
         if ($portfolioData === false) {
             response()->json(['error' => 'Unable to fetch data'], 500);
@@ -77,8 +77,7 @@ class PortfolioController extends Controller
 
     public function details($id): JsonResponse
     {
-        $portfolio = Portfolio::find($id)->with('company')->active()->orderBy('symbol')->first();
-        return response()->json($portfolio);
+        return response()->json(Portfolio::getInfoWithCompany($id));
     }
 
     public function portfolios($active): JsonResponse
@@ -98,8 +97,7 @@ class PortfolioController extends Controller
 
     public function analytics($id): JsonResponse
     {
-        $portfolio = Portfolio::where('id', $id)->with('company')->active()->orderBy('symbol')->first();
-        return response()->json($portfolio);
+        return response()->json(Portfolio::getInfoWithCompany($id));
     }
 
     public function initial(Request $request): Application|Redirector|RedirectResponse
@@ -130,18 +128,23 @@ class PortfolioController extends Controller
             $history['portfolio_id'] = $portfolio->id;
             Stock::create($history);
         }
-        $companyInfo = $this->setCompanyInfo($portfolio->id, $request->symbol, $portfolio->share_type);
+        $companyInfo = $this->setCompanyInfo($portfolio);
         Company::create($companyInfo);
 
         return redirect('/transaction/index');
     }
 
 
-    private function setCompanyInfo($portfolioId, $shareType): false|array
+    private function setCompanyInfo($portfolio): false|array
     {
-        $companyInfo = (new AlphaVantageApi($shareType))->fillCompanyInfo();
+        if($portfolio->share_type === 'etf') {
+            $companyInfo = (new ETFApi())->fillCompanyInfo($portfolio);
+        } else {
+            $companyInfo = (new AlphaVantageApi())->fillCompanyInfo($portfolio);
+        }
+
         if ($companyInfo) {
-            $companyInfo['portfolio_id'] = $portfolioId;
+            $companyInfo['portfolio_id'] = $portfolio->id;
             return $companyInfo;
         }
         return false;

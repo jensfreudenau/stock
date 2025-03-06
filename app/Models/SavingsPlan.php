@@ -5,10 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class StopLoss extends Model
+class SavingsPlan extends Model
 {
     protected $fillable = [
-        'value',
+        'quantity',
+        'buy_at',
         'portfolio_id',
     ];
 

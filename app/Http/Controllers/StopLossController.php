@@ -14,7 +14,7 @@ class StopLossController extends Controller
 {
     public function index(): View|Factory|Application
     {
-        $stopLosses = StopLoss::orderBy('portfolio_id')->get();
+        $stopLosses = StopLoss::orderBy('portfolio_id')->with('portfolio')->get();
         return view('stop_loss.index', compact('stopLosses'));
     }
 
@@ -25,7 +25,7 @@ class StopLossController extends Controller
 
     public function store(Request $request): Application|Redirector|RedirectResponse
     {
-        
+
         request()->validate([
             'portfolio_id' => ['required'],
             'value' => ['integer', 'min:1'],

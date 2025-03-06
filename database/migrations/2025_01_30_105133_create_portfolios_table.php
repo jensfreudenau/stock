@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('symbol')->index();
             $table->string('isin')->nullable();
             $table->string('name')->nullable();
+            $table->string('name_short')->nullable();
             $table->boolean('active')->nullable();
             $table->date('active_since')->nullable();
             $table->string('share_type')->nullable();

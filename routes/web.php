@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ConfigurationController;
+use App\Http\Controllers\SavingsPlanController;
 use App\Http\Controllers\ScrapingController;
 use App\Http\Controllers\StopLossController;
 use App\Http\Controllers\TransactionController;
@@ -64,6 +65,12 @@ Route::post('/stoploss/update',[StopLossController::class, 'update'])->name('sto
 Route::post('/stoploss/add', [StopLossController::class, 'add'])->name('stoploss.add');
 Route::post('/stoploss/store', [StopLossController::class, 'store'])->name('stoploss.store');
 Route::delete('/stoploss/{stoploss}', [StopLossController::class, 'destroy'])->name('stoploss.destroy');
+
+Route::get('/savingsplan/index',[SavingsPlanController::class, 'index'])->name('savingsplan.index');
+Route::post('/savingsplan/update',[SavingsPlanController::class, 'update'])->name('savingsplan.update');
+Route::post('/savingsplan/add', [SavingsPlanController::class, 'add'])->name('savingsplan.add');
+Route::post('/savingsplan/store', [SavingsPlanController::class, 'store'])->name('savingsplan.store');
+Route::delete('/savingsplan/{stoploss}', [SavingsPlanController::class, 'destroy'])->name('savingsplan.destroy');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

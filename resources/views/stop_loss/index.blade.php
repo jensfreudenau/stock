@@ -31,7 +31,7 @@
             <tbody>
             @foreach($stopLosses as $stopLoss)
                 <tr class="bg-gray-50 border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600">
-                    <th scope="row" class="py-4 px-6 font-medium text-gray-900 whitespace-nowrap dark:text-white">{{$stopLoss->portfolio_id}}</th>
+                    <th scope="row" class="py-4 px-6 font-medium text-gray-900 whitespace-nowrap dark:text-white">{{$stopLoss->portfolio->name}}</th>
                     <td class="py-4 px-6">{{$stopLoss->value}}</td>
                     <td class="py-4 px-6">
                         <button data-modal-target="modal-stoploss-edit" data-modal-toggle="modal-stoploss-edit"

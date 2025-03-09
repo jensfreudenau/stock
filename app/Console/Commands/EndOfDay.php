@@ -49,7 +49,6 @@ class EndOfDay extends Command
     private function insertCurrent($shares, $name): void
     {
         $shareValue = $shares->fillCurrent();
-        event(new StopLossReached($name, $shareValue));
         if (empty($shareValue)) {
             return;
         }

@@ -5,10 +5,10 @@ namespace App\Console\Commands;
 use App\APIHelper\ETFApi;
 use App\APIHelper\FillShare;
 use App\APIHelper\SharesApi;
+use App\Events\StopLossReached;
 use App\Models\Configuration;
 use App\Models\Portfolio;
 use App\Models\Stock;
-use Carbon\Carbon;
 use Illuminate\Console\Command;
 
 class EndOfDay extends Command
@@ -41,17 +41,18 @@ class EndOfDay extends Command
             if (Configuration::getHistory()) {
                 $this->insertHistory($shares);
             } else {
-                $this->insertCurrent($shares);
+                $this->insertCurrent($shares, $portfolios->name);
             }
         }
     }
 
-    private function insertCurrent($shares): void
+    private function insertCurrent($shares, $name): void
     {
         $shareValue = $shares->fillCurrent();
         if (empty($shareValue)) {
             return;
         }
+        event(new StopLossReached($name, $shareValue));
         $this->updateOrCreate($shareValue);
     }
 

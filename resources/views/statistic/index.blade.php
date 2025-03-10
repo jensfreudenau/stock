@@ -9,11 +9,18 @@
             <a :href="`/portfolio/show/{{$activeSymbol['id']}}`" class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700" >{{$activeSymbol['symbol']}}&nbsp;{!! Str::limit($activeSymbol['name'], 45, ' ...') !!} </a>
         </h5>
         <div class="rounded-lg mb-6 border-slate-300 border bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800 md:p-6">
-            <div x-data="{ stockDetails: [] }" x-init="stockDetails = await (await fetch(`/statistic/active/{{$activeSymbol['id']}}`)).json()">
+            <div x-data="{ stockDetails: [] }" x-init="stockDetails = await (await fetch(`/statistic/active/{{$activeSymbol['id']}}`)).json()" >
+
                 <div class="flex pt-4 flex-wrap min-w-0 gap-4">
                     <div class="rounded-lg space-x-4 mb-6 border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800 md:p-6">
                         <p class="dark:text-white"> {{__('gesamte Anzahl')}}</p>
-                        <p class="dark:text-white text-8xl" x-text="stockDetails.remainingShares"></p>
+                        <div x-data="{ get formattedZahl() {
+                                return new Intl.NumberFormat('de-DE', { minimumFractionDigits: 0, maximumFractionDigits: 2 }).format(stockDetails.remainingShares);
+                                }
+                            }">
+                            <p class="dark:text-white text-8xl" x-text="formattedZahl"></p>
+                        </div>
+
                     </div>
                     <div class="rounded-lg space-x-4 mb-6 border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800 md:p-6">
                         <p class="dark:text-white"> {{__('Profit')}}</p>
@@ -30,18 +37,18 @@
                         <p class="dark:text-white text-3xl pl-4" x-money.de-DE.EUR="stockDetails.remainingShares * stockDetails.averagePurchasePrice"></p>
 
                     </div>
-                    <div class="rounded-lg space-x-4 mb-3 border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800 md:p-6">
+                    <div class="rounded-lg space-x-4 mb-6 border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800 md:p-6">
                         <p class="dark:text-white text-2xl "> {{__('%')}}</p>
                         <p class=" text-7xl"
                            :class="{ 'text-red-500' : parseInt(stockDetails.percent) < 0 , 'text-green-400' : parseInt(stockDetails.percent) >= 0}"
                            x-text=" (stockDetails.percent)">
                         </p>
                     </div>
-                    <div class="rounded-lg space-x-4 mb-3 border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800 md:p-6">
+                    <div class="rounded-lg space-x-4 mb-6 border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800 md:p-6">
                         <p class="dark:text-white text-2xl ">&empty; {{__('Kaufpreis')}}</p>
                         <p class="dark:text-white text-5xl" x-money.de-DE.EUR="stockDetails.averagePurchasePrice"></p>
                     </div>
-                    <div class="rounded-lg space-x-4 mb-3 border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800 md:p-6">
+                    <div class="rounded-lg space-x-4 mb-6 border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800 md:p-6">
                         <p class="dark:text-white text-2xl "> {{__('heutiger Preis')}}</p>
                         <p class="dark:text-white text-5xl" x-money.de-DE.EUR="stockDetails.currentPrice"></p>
                     </div>
@@ -71,19 +78,19 @@
                         </p>
                     </div>
 
-                    <div class="rounded-lg space-x-4 mb-3 border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800 md:p-6">
+                    <div class="rounded-lg space-x-4 mb-6 border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800 md:p-6">
                         <p class="dark:text-white text-2xl"> {{__('%')}}</p>
                         <p class=" text-7xl"
                            :class="{ 'text-red-500' : parseInt(stockDetails.percent) < 0 , 'text-green-400' : parseInt(stockDetails.percent) >= 0}"
                            x-text=" (stockDetails.percent)">
                         </p>
                     </div>
-                    <div class="rounded-lg space-x-4 mb-3 border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800 md:p-6">
+                    <div class="rounded-lg space-x-4 mb-6 border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800 md:p-6">
                         <p class="dark:text-white text-2xl">&empty; {{__('Kaufpreis')}}</p>
                         <p class="dark:text-white text-5xl" x-money.de-DE.EUR="stockDetails.averagePurchasePrice"></p>
 
                     </div>
-                    <div class="rounded-lg space-x-4 mb-3 border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800 md:p-6">
+                    <div class="rounded-lg space-x-4 mb-6 border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800 md:p-6">
                         <p class="dark:text-white text-2xl">&empty; {{__('Verkaufspreis')}}</p>
                         <p class="dark:text-white text-5xl" x-money.de-DE.EUR="stockDetails.averageSellPrice"></p>
                     </div>

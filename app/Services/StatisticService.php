@@ -33,6 +33,10 @@ class StatisticService
                 $sellQuantity -= $buy->quantity;
                 // Setze die Kaufmenge auf 0, weil sie verkauft wurde
                 Transaction::where('id', $buy->id)->update(['quantity' => 0]);
+
+                $portfolio = Portfolio::find($buy->portfolio_id);
+                $portfolio->update(['active' => 0]);
+
             } else {
                 // Teilweise verkaufen
                 $profit += ($sellPrice - $buy->price) * $sellQuantity;

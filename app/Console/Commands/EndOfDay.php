@@ -9,6 +9,7 @@ use App\Events\StopLossReached;
 use App\Models\Configuration;
 use App\Models\Portfolio;
 use App\Models\Stock;
+use App\Models\StopLoss;
 use Illuminate\Console\Command;
 
 class EndOfDay extends Command
@@ -33,26 +34,27 @@ class EndOfDay extends Command
         foreach ($portfolios as $portfolio) {
             if ($portfolio->share_type === 'etf') {
                 $shares = new FillShare($portfolio, new ETFApi());
-            }
-            else {
+            } else {
                 $shares = new FillShare($portfolio, new SharesApi());
             }
-
             if (Configuration::getHistory()) {
                 $this->insertHistory($shares);
             } else {
-                $this->insertCurrent($shares, $portfolios->name);
+                $this->insertCurrent($shares, $portfolio);
             }
         }
     }
 
-    private function insertCurrent($shares, $name): void
+    private function insertCurrent($shares, $portfolio): void
     {
         $shareValue = $shares->fillCurrent();
         if (empty($shareValue)) {
             return;
         }
-        event(new StopLossReached($name, $shareValue));
+        $stopLoss = StopLoss::where('portfolio_id', $portfolio->id)->first();
+        if (!empty($stopLoss) && ($stopLoss->value > $shareValue->close)) {
+            event(new StopLossReached($portfolio->name, $shareValue->close));
+        }
         $this->updateOrCreate($shareValue);
     }
 

@@ -11,6 +11,7 @@
         "guzzlehttp/guzzle": "^7.9",
         "laravel/framework": "^11.31",
         "laravel/tinker": "^2.9",
+        "mailersend/laravel-driver": "^2.8",
         "moneyphp/money": "^4.6",
         "symfony/browser-kit": "^7.2",
         "symfony/http-client": "^7.2"

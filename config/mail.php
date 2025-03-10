@@ -36,7 +36,9 @@ return [
     */
 
     'mailers' => [
-
+        'mailersend' => [
+            'transport' => 'mailersend',
+        ],
         'smtp' => [
             'transport' => 'smtp',
             'scheme' => env('MAIL_SCHEME'),
@@ -109,7 +111,7 @@ return [
     */
 
     'from' => [
-        'address' => env('MAIL_FROM_ADDRESS', 'hello@example.com'),
+        'address' => env('MAIL_FROM_ADDRESS', 'jens@freude-now.de'),
         'name' => env('MAIL_FROM_NAME', 'Example'),
     ],
 

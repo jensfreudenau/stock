@@ -28,6 +28,9 @@ class StatisticController extends Controller
             $activeSymbols[$key]['name'] = $portfolio->name;
             $price = Stock::where('symbol', $portfolio->symbol)->orderBy('id', 'desc')->first();
             $current = StatisticService::calculateCurrentValues($price->close, $portfolio->id);
+            if ($current === false) {
+                continue;
+            }
             $profitTemp += $current['profitLoss'];
         }
         $portfoliosArchives = Portfolio::active(0)->orderBy('symbol')->get();
@@ -62,7 +65,7 @@ class StatisticController extends Controller
         $chartData = [];
         foreach ($chartValues as $key => $chartValue) {
             $data['x'] = $key;
-            $data['y'] = $chartValue/100;
+            $data['y'] = $chartValue / 100;
             $chartData[] = $data;
         }
 
@@ -104,6 +107,9 @@ class StatisticController extends Controller
             ->orderBy('id', 'desc')
             ->first();
         $currentPerformance = StatisticService::calculateCurrentValues($last->close, $portfolioId);
+        if ($currentPerformance === false) {
+            return response()->json();
+        }
         if ($previousWeekdayModel && $dayBeforePreviousWeekday) {
             $performance['day'] = $previousWeekdayModel->close - $dayBeforePreviousWeekday->close;
             $performance['day_profit'] = ($previousWeekdayModel->close - $dayBeforePreviousWeekday->close) * $currentPerformance['remainingShares'];

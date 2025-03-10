@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\Portfolio;
 use App\Models\Profit;
 use App\Models\Transaction;
 
@@ -42,6 +43,7 @@ class StatisticService
         }
         // Speichere den Gewinn in der Datenbank
         Profit::insert([
+            'portfolio_id' => $sell->portfolio_id,
             'symbol' => $sell->symbol,
             'sell_id' => $sellId,
             'profit' => $profit,
@@ -51,7 +53,7 @@ class StatisticService
         return true;
     }
 
-    public static function calculateCurrentValues($currentPrice, $portfolioId): array
+    public static function calculateCurrentValues($currentPrice, $portfolioId): false|array
     {
         if ($currentPrice === 0) {
             $currentPrice = 1;
@@ -75,8 +77,10 @@ class StatisticService
         foreach ($sells as $sell) {
             $totalSold += $sell->quantity;
         }
+
         // Verbleibende Aktien
         $remainingShares = $totalPurchased - $totalSold;
+        if($remainingShares <= 0) return false;
         // Aktueller Wert
         $currentValue = $remainingShares * $currentPrice;
         // Durchschnittlicher Kaufpreis pro Aktie

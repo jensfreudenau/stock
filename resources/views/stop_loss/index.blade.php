@@ -29,18 +29,19 @@
             </tr>
             </thead>
             <tbody>
-            @foreach($stopLosses as $stopLoss)
+            @foreach($stopLosses as $stoploss)
                 <tr class="bg-gray-50 border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600">
-                    <th scope="row" class="py-4 px-6 font-medium text-gray-900 whitespace-nowrap dark:text-white">{{$stopLoss->portfolio->name}}</th>
-                    <td class="py-4 px-6">{{$stopLoss->value}}</td>
+                    <th scope="row"
+                        class="py-4 px-6 font-medium text-gray-900 whitespace-nowrap dark:text-white">{{$stoploss->portfolio->name}}</th>
+                    <td class="py-4 px-6">{{$stoploss->value}}</td>
                     <td class="py-4 px-6">
                         <button data-modal-target="modal-stoploss-edit" data-modal-toggle="modal-stoploss-edit"
-                                @click="selectedItem = { id: '{{ $stopLoss->id }}',  value: '{{ $stopLoss->value }}',  portfolio_id: '{{ $stopLoss->portfolio_id }}' }; showModal = true"
+                                @click="selectedItem = { id: '{{ $stoploss->id }}',  value: '{{ $stoploss->value }}',  portfolio_id: '{{ $stoploss->portfolio_id }}' }; showModal = true"
                                 class="">
                             <i class="fas fa-edit"></i>
                         </button>
                         &nbsp;
-                        <form method="POST" action="{{ route('stoploss.destroy', $stopLoss) }}"
+                        <form method="POST" action="{{ route('stoploss.destroy', $stoploss) }}"
                               onsubmit="return confirm('Are you sure:');">
                             @method('DELETE')
                             @csrf
@@ -53,8 +54,8 @@
             @endforeach
             </tbody>
         </table>
-        <x-modal-stoploss-edit />
+        <x-modal-stoploss-edit/>
     </div>
-    <x-modal-stoploss-add />
+    <x-modal-stoploss-add/>
 
 </x-layout>

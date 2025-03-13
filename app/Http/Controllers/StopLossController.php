@@ -45,9 +45,9 @@ class StopLossController extends Controller
         return redirect('/stoploss/index');
     }
 
-    public function destroy(StopLoss $stopLoss): Application|Redirector|RedirectResponse
+    public function destroy(StopLoss $stoploss): Application|Redirector|RedirectResponse
     {
-        $stopLoss->delete();
+        $stoploss->delete();
         return redirect('stoploss/index')->with('success', 'StopLoss deleted successfully');
     }
 }

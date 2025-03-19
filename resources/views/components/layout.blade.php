@@ -19,6 +19,8 @@
 
 </head>
 <body class="font-sans antialiased bg-white" x-data="{ open: false }">
+<div class="min-h-screen bg-gray-100">
+
 <button
     @click="open = !open"
     class="p-4 md:hidden focus:outline-none z-40"
@@ -50,6 +52,7 @@
         {{ $slot }}
         <x-footer/>
     </main>
+</div>
 </div>
 @stack('js_after')
 </body>

@@ -52,6 +52,25 @@
                     <span class="flex-1 ml-3 whitespace-nowrap">{{__('Sparplan')}}</span>
                 </a>
             </li>
+            <li>
+                <a href="{{route('profile.edit')}}"
+                   class="flex items-center p-2 text-base font-normal text-gray-100 rounded-lg dark:text-white hover:bg-gray-900 dark:hover:bg-gray-700">
+                    <i class="fa-regular fa-user"></i>
+                    <span class="flex-1 ml-3 whitespace-nowrap"> {{ __('Profile') }}</span>
+                </a>
+            </li>
+            <li>
+                <form method="POST" action="{{ route('logout') }}">
+                    @csrf
+                    <a href="{{route('logout')}}"
+                       class="flex items-center p-2 text-base font-normal text-gray-100 rounded-lg dark:text-white hover:bg-gray-900 dark:hover:bg-gray-700"
+                                     onclick="event.preventDefault();
+                                                this.closest('form').submit();">
+                        <i class="fa-solid fa-right-from-bracket"></i>
+                        <span class="flex-1 ml-3 whitespace-nowrap"> {{ __('Log Out') }}</span>
+                    </a>
+                </form>
+            </li>
         </ul>
     </div>
 </aside>
